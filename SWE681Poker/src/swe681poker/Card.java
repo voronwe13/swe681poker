@@ -1,7 +1,5 @@
 package swe681poker;
 
-//This is a dummy comment to check if commit is working
-
 public class Card implements Comparable<Card>{
 	Suit suit;
 	Value value;
