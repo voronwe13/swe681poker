@@ -17,22 +17,22 @@ public class Server {
 		SSLSocket sslsocket = (SSLSocket) sslserversocket.accept();
 
 		InputStream inputstream = sslsocket.getInputStream();
-		InputStreamReader inputstreamreader = new InputStreamReader(
-			inputstream);
-		BufferedReader bufferedreader = new BufferedReader(
-			inputstreamreader);
+		//InputStreamReader inputstreamreader = new InputStreamReader(inputstream);
+		InputStreamReader inputstreamreader = null;
+		//BufferedReader bufferedreader = new BufferedReader(inputstreamreader);
+		BufferedReader bufferedreader = null;
+		
 		OutputStream outputstream = sslsocket.getOutputStream();
-		OutputStreamWriter outputstreamwriter = new OutputStreamWriter(
-			outputstream);
-		BufferedWriter bufferedwriter = new BufferedWriter(
-			outputstreamwriter);
-		// ObjectOutputStream objectoutputstream = new
-		// ObjectOutputStream(outputstream);
-		// objectoutputstream.flush();
-		// ObjectInputStream objectinputstream = new
-		// ObjectInputStream(inputstream);
-		ObjectOutputStream objectoutputstream = null;
-		ObjectInputStream objectinputstream = null;
+		//OutputStreamWriter outputstreamwriter = new OutputStreamWriter(outputstream);
+		OutputStreamWriter outputstreamwriter = null;
+		//BufferedWriter bufferedwriter = new BufferedWriter(outputstreamwriter);
+		BufferedWriter bufferedwriter = null;
+		
+		ObjectOutputStream objectoutputstream = new ObjectOutputStream(outputstream);
+		objectoutputstream.flush();
+		ObjectInputStream objectinputstream = new ObjectInputStream(inputstream);
+		//ObjectOutputStream objectoutputstream = null;
+		//ObjectInputStream objectinputstream = null;
 		new Thread(new ServerThread(inputstreamreader, bufferedreader,
 			outputstreamwriter, bufferedwriter, objectinputstream,
 			objectoutputstream)).start();

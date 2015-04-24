@@ -4,14 +4,17 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 public class AesMessageStructure implements Serializable{
 	public SecretKey sessionKey;
-	public SecureRandom nonce;
+	public String nonceString;
+	public String randomString;
 	
-	public AesMessageStructure(SecretKey sessionKeyInput, SecureRandom nonceInput)
+	public AesMessageStructure(SecretKey sessionKeyInput, String nonceInput, String randomStringInput)
 	{
 		sessionKey = sessionKeyInput;
-		nonce = nonceInput;
+		nonceString = nonceInput;
+		randomString = randomStringInput;
 	}
 }
