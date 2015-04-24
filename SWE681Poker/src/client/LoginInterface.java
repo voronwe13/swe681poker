@@ -66,53 +66,38 @@ public class LoginInterface {
 	    SecureRandom nonce = new SecureRandom();
 	    nonceString = nonce.toString().substring(
 		    nonce.toString().length() - 8);
-	    System.out.println("Plain text: "+nonceString);
+	    System.out.println("Plain text: " + nonceString);
 	    // Generate IV
 	    SecureRandom random = new SecureRandom();
 	    String randomString = random.toString().substring(
 		    nonce.toString().length() - 8);
 	    randomString += randomString;
 	    byte[] iv = randomString.getBytes();
-	    IvParameterSpec ivspec = new IvParameterSpec(iv);
-	    FileOutputStream fs = new FileOutputStream(new File("paramFile"));
-	    BufferedOutputStream bos = new BufferedOutputStream(fs);
-	    bos.write(iv);
-	    bos.close();
+	    while (iv.length != 16) {
+		random = new SecureRandom();
+		randomString = random.toString().substring(
+			nonce.toString().length() - 8);
+		randomString += randomString;
+		iv = randomString.getBytes();
+	    }
 	    // Create the AES message object
 	    AesMessageStructure aesMessage = new AesMessageStructure(
 		    sessionKey, nonceString, randomString);
 	    // Send the AES message object
 	    objectoutputstream.writeObject(aesMessage);
-	    // Compute the encrypted string
-	    Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-	    cipher.init(Cipher.ENCRYPT_MODE, sessionKey, ivspec);
-	    byte[] encryptedStringByte = cipher.doFinal(nonceString.getBytes());
 	    // Listen to server
 	    byte[] encryptedStringByteFromServer = (byte[]) objectinputstream
 		    .readObject();
-	    // Compare with the object returned from Server
-	    if (encryptedStringByte.equals(encryptedStringByteFromServer)) {
-		System.out.println("Life is good\n");
-	    }
-	    byte[] fileData = new byte[16];
-	    DataInputStream dis = null;
-
-	    dis = new DataInputStream(
-		    new FileInputStream(new File("paramFile")));
-	    dis.readFully(fileData);
-	    if (dis != null) {
-		dis.close();
-	    }
 	    // reinitialize the cipher for decryption
+	    Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 	    cipher.init(Cipher.DECRYPT_MODE, sessionKey, new IvParameterSpec(
-		    fileData));
+		    iv));
 
 	    // decrypt the message
 	    byte[] decrypted = cipher.doFinal(encryptedStringByteFromServer);
 	    System.out.println("Plaintext: " + new String(decrypted) + "\n");
 
-	    if(nonceString.equals(new String(decrypted)))
-	    {
+	    if (nonceString.equals(new String(decrypted))) {
 		System.out.println("Client verified the server\n");
 	    }
 
