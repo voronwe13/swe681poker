@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
@@ -50,8 +51,6 @@ public class LoginInterface {
 
 	    InputStream inputstream = sslsocket.getInputStream();
 	    OutputStream outputstream = sslsocket.getOutputStream();
-	    outputstreamwriter = null;
-	    bufferedwriter = null;
 
 	    ObjectOutputStream objectoutputstream = new ObjectOutputStream(
 		    outputstream);
@@ -99,6 +98,7 @@ public class LoginInterface {
 
 	    if (nonceString.equals(new String(decrypted))) {
 		System.out.println("Client verified the server\n");
+		Socket socket = new Socket("localhost", 9998);
 	    }
 
 	} catch (Exception exception) {
