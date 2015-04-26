@@ -11,8 +11,7 @@ public class ServerThreadSsl implements Runnable {
     public ObjectInputStream objectinputstream;
     public ObjectOutputStream objectoutputstream;
 
-    public ServerThreadSsl(
-	    ObjectInputStream objectinputstreamInput,
+    public ServerThreadSsl(ObjectInputStream objectinputstreamInput,
 	    ObjectOutputStream objectoutputstreamInput) {
 	objectinputstream = objectinputstreamInput;
 	objectoutputstream = objectoutputstreamInput;
@@ -32,14 +31,18 @@ public class ServerThreadSsl implements Runnable {
 	    byte randomStringByte[] = randomString.getBytes();
 	    IvParameterSpec ivspec = new IvParameterSpec(randomStringByte);
 	    Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-	    cipher.init(Cipher.ENCRYPT_MODE, sessionKey,ivspec);
+	    cipher.init(Cipher.ENCRYPT_MODE, sessionKey, ivspec);
 	    byte[] encryptedStringByte = cipher.doFinal(nonceString.getBytes());
 	    // Send the encryptedString to client
 	    objectoutputstream.writeObject(encryptedStringByte);
-	    
+
 	    ServerSocket serverSocket = new ServerSocket(9998);
 	    Socket socket = serverSocket.accept();
 	    
+	    System.out.println("Ben server olarak baglantiyi kabul ettim\n");
+	    
+	    new Thread(new ServerThread(socket, sessionKey, ivspec)).start();
+
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	}

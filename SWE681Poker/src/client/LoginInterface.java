@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
+import server.ServerThreadSsl;
+
 public class LoginInterface {
 
     protected Shell shell;
@@ -88,9 +90,9 @@ public class LoginInterface {
 	    byte[] encryptedStringByteFromServer = (byte[]) objectinputstream
 		    .readObject();
 	    // reinitialize the cipher for decryption
+	    IvParameterSpec ivspec = new IvParameterSpec(iv);
 	    Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-	    cipher.init(Cipher.DECRYPT_MODE, sessionKey, new IvParameterSpec(
-		    iv));
+	    cipher.init(Cipher.DECRYPT_MODE, sessionKey, ivspec);
 
 	    // decrypt the message
 	    byte[] decrypted = cipher.doFinal(encryptedStringByteFromServer);
@@ -98,7 +100,15 @@ public class LoginInterface {
 
 	    if (nonceString.equals(new String(decrypted))) {
 		System.out.println("Client verified the server\n");
-		Socket socket = new Socket("localhost", 9998);
+		Socket socket = new Socket("localhost", 9998); 
+		// new Thread(new ClientThread(socket, sessionKey,
+		// new IvParameterSpec(iv))).start();
+		cipher.init(Cipher.ENCRYPT_MODE, sessionKey, ivspec);
+		byte[] encryptedStringByte = cipher.doFinal(new String("Bu bir deneme kaydidir\n")
+			.getBytes());
+		ObjectOutputStream objectoutputstreamTemp = new ObjectOutputStream(
+			    socket.getOutputStream());
+		objectoutputstreamTemp.writeObject(encryptedStringByte);
 	    }
 
 	} catch (Exception exception) {

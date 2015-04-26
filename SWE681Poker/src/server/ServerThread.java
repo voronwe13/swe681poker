@@ -11,12 +11,18 @@ public class ServerThread implements Runnable {
     public Socket socket;
     public SecretKey sessionKey;
     public IvParameterSpec ivspec;
+    public Cipher cipher;
 
     public ServerThread(Socket socketInput, SecretKey sessionKeyInput,
 	    IvParameterSpec ivspecInput) {
-	socket = socketInput;
-	sessionKey = sessionKeyInput;
-	ivspec = ivspecInput;
+	try {
+	    socket = socketInput;
+	    sessionKey = sessionKeyInput;
+	    ivspec = ivspecInput;
+	    cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+	} catch (Exception exception) {
+	    exception.printStackTrace();
+	}
     }
 
     public void run() {
@@ -29,7 +35,10 @@ public class ServerThread implements Runnable {
 
 	    byte[] input = null;
 	    while ((input = (byte[]) objectinputstream.readObject()) != null) {
-		// System.out.println(string);
+		cipher.init(Cipher.DECRYPT_MODE, sessionKey, ivspec);
+		byte[] decrypted = cipher
+			.doFinal(input);
+		System.out.println(new String(decrypted));
 		// System.out.flush();
 	    }
 	} catch (Exception exception) {
