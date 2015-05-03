@@ -3,10 +3,12 @@ package server;
 import swe681poker.Card;
 
 public class Player {
+	String username;
 	int money;  //money this player has according to the server
 	Card[] hand;  //cards in hand
 	boolean active;  //whether player is in current game
 	int tablenumber;	//which table the player is currently playing at
+	int seatnumber;		//which seat at the table the player is at
 	//client socket to communicate with this player.
 	//other stats for the player
 	
@@ -14,6 +16,7 @@ public class Player {
 		money = startingmoney;
 		active = false;
 	}
+	
 	
 	/**
 	 * Get the bid from the client.  Should use secure communication.  Since this is
@@ -52,6 +55,32 @@ public class Player {
 	public void sendCard(Card card){
 		//TODO: send card to client
 	}
+
+	/**
+	 * sends dealer number to client so it can show dealer, big blind and small blind
+	 * @param dealer	array position of dealer in players.
+	 */
+	public void setDealer(int dealer) {
+		// TODO send dealer number to client so it can show which seat is the dealer
+		
+	}
 	
+	/**
+	 * sends player information on the rest of the players. Specifically, the seat 
+	 * number (array position), the player's name, and the player's chip total.
+	 * @param players		array of players in the game
+	 */
+	public void setPlayers(Player[] players){
+		//TODO: send player information for each player to client.  
+	}
+	
+	/**
+	 * if new player joins the table, this notifies this player of the new player's attributes
+	 * (see setPlayers).
+	 * @param newplayer		the new player in the game.
+	 */
+	public void newPlayerAdded(Player newplayer){
+		//TODO: send player data to client
+	}
 	
 }
