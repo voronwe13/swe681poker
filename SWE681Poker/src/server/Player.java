@@ -4,9 +4,11 @@ import swe681poker.Card;
 
 public class Player {
 	int money;  //money this player has according to the server
-	Card[] hand;
-	boolean active;
+	Card[] hand;  //cards in hand
+	boolean active;  //whether player is in current game
+	int tablenumber;	//which table the player is currently playing at
 	//client socket to communicate with this player.
+	//other stats for the player
 	
 	public Player(int startingmoney){
 		money = startingmoney;

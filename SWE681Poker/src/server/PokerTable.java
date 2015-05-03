@@ -9,6 +9,7 @@ public class PokerTable implements Runnable {
 	Player[] players;	//players at the table, each slot in array is a seat
 	PokerGame game;			//current game
 	Player dealer;			//current dealer
+	boolean tableactive;
 	
 	public PokerTable(){
 		players = new Player[MAX_PLAYERS_TABLE];
@@ -27,7 +28,15 @@ public class PokerTable implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		tableactive = true;
+		while(tableactive){
+			//TODO: run games, keep track of players in table.
+		}
 		
+	}
+	
+	public void closeTable(){
+		tableactive = false;
 	}
 	
 	
