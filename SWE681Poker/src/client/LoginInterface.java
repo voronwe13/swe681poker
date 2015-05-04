@@ -24,6 +24,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -31,10 +32,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Rectangle;
 
 import server.ServerThreadSsl;
 
 public class LoginInterface {
+
+	final int WIDTH = 480, HEIGHT = 360;
+	final int CENTERX = WIDTH/2, CENTERY = HEIGHT/2;
 
     protected Shell shell;
     public static InputStreamReader inputstreamreader;
@@ -144,7 +149,7 @@ public class LoginInterface {
      */
     public void open() {
     	Display display = Display.getDefault();
-    	createContents();
+    	createLoginContents();
     	shell.open();
     	shell.layout();
     	while (!shell.isDisposed()) {
@@ -152,14 +157,13 @@ public class LoginInterface {
     			display.sleep();
     		}
     	}
+    	display.dispose();
     }
 
     /**
      * Create contents of the window.
      */
-    protected void createContents() {
-    	final int WIDTH = 480, HEIGHT = 360;
-    	final int CENTERX = WIDTH/2, CENTERY = HEIGHT/2;
+    protected void createLoginContents() {
     	shell = new Shell();
     	shell.setSize(WIDTH, HEIGHT);
     	shell.setText("Log in");
@@ -184,7 +188,8 @@ public class LoginInterface {
     	btnsignup.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-
+    			//TODO: call server to create account
+    			showMainMenu();
     		}
     	});
     	btnsignup.setBounds(140, 239, 95, 28);
@@ -194,11 +199,74 @@ public class LoginInterface {
     	btnsignin.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-
+    			//TODO: call server to log in
+    			showMainMenu();
     		}
     	});
     	btnsignin.setBounds(240, 239, 95, 28);
     	btnsignin.setText("Log In");
 
     }
+    
+    private void clearContents(){
+    	for (Control child : shell.getChildren()) {
+    		child.dispose();
+    	}
+    }
+    
+    Button createButton(Shell shell, int style, Rectangle rect, String text){
+    	Button button = new Button(shell, style);
+    	button.setBounds(rect);
+    	button.setText(text);
+    	return button;
+    }
+    
+    private void showMainMenu(){
+    	clearContents();
+    	Label title = new Label(shell, SWT.CENTER);
+    	title.setText("Welcome to SecurePoker");
+    	title.setBounds(10, 10, WIDTH - 20, 40);
+    	
+    	int buttonwidth = 200, buttonheight = 30;
+    	int halfbtnw = buttonwidth/2;
+    	Rectangle buttonrect = new Rectangle(CENTERX - halfbtnw, 60, buttonwidth, buttonheight);
+    	Button jointable = createButton(shell, SWT.NONE, buttonrect, "Join a Table");
+    	jointable.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			showTableMenu();
+    		}
+    	});
+    	buttonrect.y += buttonheight + 5;
+    	Button seescores = createButton(shell, SWT.NONE, buttonrect, "See Leaderboard");
+    	seescores.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			showLeaderBoard();
+    		}
+    	});
+    	buttonrect.y += buttonheight + 5;
+    	Button seegames = createButton(shell, SWT.NONE, buttonrect, "See Completed Games");
+    	seegames.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			showOldGames();
+    		}
+    	});    	
+    }
+
+	protected void showOldGames() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void showLeaderBoard() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void showTableMenu() {
+		// TODO Auto-generated method stub
+		
+	}
 }
