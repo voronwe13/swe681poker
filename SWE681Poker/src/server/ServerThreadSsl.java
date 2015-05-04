@@ -10,11 +10,15 @@ import javax.crypto.spec.IvParameterSpec;
 public class ServerThreadSsl implements Runnable {
     public ObjectInputStream objectinputstream;
     public ObjectOutputStream objectoutputstream;
+    public ServerSocket serverSocket;
+    public table.GameCoordinator gameCoordinator;
 
     public ServerThreadSsl(ObjectInputStream objectinputstreamInput,
-	    ObjectOutputStream objectoutputstreamInput) {
+	    ObjectOutputStream objectoutputstreamInput,ServerSocket socketInput, table.GameCoordinator gameCoordinatorInput) {
 	objectinputstream = objectinputstreamInput;
 	objectoutputstream = objectoutputstreamInput;
+	serverSocket=socketInput;
+	gameCoordinator=gameCoordinatorInput;
     }
 
     public void run() {
@@ -36,12 +40,11 @@ public class ServerThreadSsl implements Runnable {
 	    // Send the encryptedString to client
 	    objectoutputstream.writeObject(encryptedStringByte);
 
-	    ServerSocket serverSocket = new ServerSocket(9998);
 	    Socket socket = serverSocket.accept();
 	    
 	    System.out.println("Ben server olarak baglantiyi kabul ettim\n");
 	    
-	    new Thread(new ServerThread(socket, sessionKey, ivspec)).start();
+	    new Thread(new ServerThread(socket, sessionKey, ivspec,gameCoordinator)).start();
 
 	} catch (Exception exception) {
 	    exception.printStackTrace();

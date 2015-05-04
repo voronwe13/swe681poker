@@ -3,6 +3,7 @@ package server;
 import javax.net.ssl.*;
 
 import java.io.*;
+import java.net.ServerSocket;
 
 public class Server {
     public static void main(String[] arstring) {
@@ -13,6 +14,8 @@ public class Server {
 		    .getDefault();
 	    SSLServerSocket sslserversocket = (SSLServerSocket) sslserversocketfactory
 		    .createServerSocket(9999);
+	    ServerSocket serverSocket = new ServerSocket(9998);
+	    table.GameCoordinator gameCoordinator = new table.GameCoordinator();
 	    while (true) {
 		SSLSocket sslsocket = (SSLSocket) sslserversocket.accept();
 
@@ -23,7 +26,7 @@ public class Server {
 		objectoutputstream.flush();
 		ObjectInputStream objectinputstream = new ObjectInputStream(inputstream);
 		new Thread(new ServerThreadSsl(objectinputstream,
-			objectoutputstream)).start();
+			objectoutputstream,serverSocket,gameCoordinator)).start();
 	    }
 	} catch (Exception exception) {
 	    exception.printStackTrace();
