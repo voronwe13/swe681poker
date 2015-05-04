@@ -9,6 +9,7 @@ public class PokerGame {
 	int dealer;
 	int playersremaining;
 	int pot;
+	Card[] communitycards;
 	public static final int firstroundmin = 10;
 	public static final int secondroundmin = 20;
 
@@ -16,6 +17,7 @@ public class PokerGame {
 		this.players = players;
 		this.dealer = dealer;
 		deck = new CardDeck();
+		communitycards = new Card[5];
 	}
 	
 	public void startGame(){
@@ -43,13 +45,23 @@ public class PokerGame {
 	}
 
 	private void playRiver() {
-		// TODO Auto-generated method stub
-		
+		Card burn = deck.dealOne(); //probably not necessary, but following poker rules
+		Card river = deck.dealOne();
+		for(Player player:players){
+			if(player != null)
+				player.sendCard(river);
+		}
+		communitycards[5] = river;	
 	}
 
 	private void playTurn() {
-		// TODO Auto-generated method stub
-		
+		Card burn = deck.dealOne(); //probably not necessary, but following poker rules
+		Card turn = deck.dealOne();
+		for(Player player:players){
+			if(player != null)
+				player.sendCard(turn);
+		}
+		communitycards[4] = turn;
 	}
 
 	private void playFlop() {
@@ -58,6 +70,9 @@ public class PokerGame {
 		for(Player player:players){
 			if(player != null)
 				player.sendFlop(flop);
+		}
+		for(int i=0; i<flop.length; i++){
+			communitycards[i] = flop[i];
 		}
 	}
 
