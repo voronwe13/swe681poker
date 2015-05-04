@@ -46,6 +46,7 @@ public class LoginInterface {
 	final int CENTERX = WIDTH/2, CENTERY = HEIGHT/2;
 
     protected Shell shell;
+    private Display display;
     public static InputStreamReader inputstreamreader;
     public static BufferedReader bufferedreader;
     public static OutputStreamWriter outputstreamwriter;
@@ -153,7 +154,7 @@ public class LoginInterface {
      * Open the window.
      */
     public void open() {
-    	Display display = Display.getDefault();
+    	display = Display.getDefault();
     	createLoginContents();
     	shell.open();
     	shell.layout();
@@ -172,29 +173,40 @@ public class LoginInterface {
     	shell = new Shell();
     	shell.setSize(WIDTH, HEIGHT);
     	shell.setText("Log in");
-    	
+    	showLogin(false);
+
+    }
+    
+    protected void showLogin(boolean withloginerror) {
+    	clearContents();
     	Label title = new Label(shell, SWT.CENTER);
     	title.setText("Welcome to SecurePoker");
     	title.setBounds(10, 10, WIDTH - 20, 40);
     	
-    	Label usernametxt= new Label(shell, SWT.NONE);
+    	if(withloginerror){
+    		Label loginerror = new Label(shell, SWT.NONE);
+    		loginerror.setText("invalid username or password");
+    		loginerror.setBounds(CENTERX/2, CENTERY/2 - 20, 200, 20);
+    		loginerror.setForeground(display.getSystemColor(SWT.COLOR_RED));
+    	}
+    	
+    	Label usernametxt = new Label(shell, SWT.NONE);
     	usernametxt.setText("Username:");
     	usernametxt.setBounds(CENTERX/2, CENTERY/2, 70, 20);
-    	Text usernamebox = new Text(shell, SWT.BORDER);
+    	final Text usernamebox = new Text(shell, SWT.BORDER);
     	usernamebox.setBounds(CENTERX/2 + 75, CENTERY/2, 100, 20);
     	
     	Label passwordtxt= new Label(shell, SWT.NONE);
     	passwordtxt.setText("Password:");
     	passwordtxt.setBounds(CENTERX/2, CENTERY/2+45, 70, 20);
-    	Text passwordbox = new Text(shell, SWT.PASSWORD | SWT.BORDER);
+    	final Text passwordbox = new Text(shell, SWT.PASSWORD | SWT.BORDER);
     	passwordbox.setBounds(CENTERX/2 + 75, CENTERY/2+45, 100, 20);
 
     	Button btnsignup = new Button(shell, SWT.NONE);
     	btnsignup.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-    			//TODO: call server to create account
-    			showMainMenu();
+    			showCreateUser(null, null);
     		}
     	});
     	btnsignup.setBounds(140, 239, 95, 28);
@@ -204,16 +216,105 @@ public class LoginInterface {
     	btnsignin.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-    			//TODO: call server to log in
-    			showMainMenu();
+    			String response = sendCredentials(usernamebox.getText(), passwordbox.getText(), true);
+    			if("success".equals(response))
+    				showMainMenu();
+    			else 
+    				showLogin(true);
     		}
     	});
     	btnsignin.setBounds(240, 239, 95, 28);
     	btnsignin.setText("Log In");
+		
+	}
 
-    }
-    
-    private void clearContents(){
+	protected void showCreateUser(String usernameerror, String passworderror) {
+    	clearContents();
+    	Label title = new Label(shell, SWT.CENTER);
+    	title.setText("Welcome to SecurePoker");
+    	title.setBounds(10, 10, WIDTH - 20, 40);
+    	
+    	int textwidth = 100;
+    	
+    	if(usernameerror != null){
+    		Label nameerror = new Label(shell, SWT.NONE);
+    		nameerror.setText(usernameerror);
+    		nameerror.setBounds(CENTERX/2, CENTERY/2 - 20, 220, 20);
+    		nameerror.setForeground(display.getSystemColor(SWT.COLOR_RED));
+    	}
+    	
+    	Label usernametxt = new Label(shell, SWT.NONE);
+    	usernametxt.setText("Username:");
+    	usernametxt.setBounds(CENTERX/2, CENTERY/2, textwidth, 20);
+    	final Text usernamebox = new Text(shell, SWT.BORDER);
+    	usernamebox.setBounds(CENTERX/2 + 5 + textwidth, CENTERY/2, 100, 20);
+    	
+    	if(passworderror != null){
+    		Label passerror = new Label(shell, SWT.NONE);
+    		passerror.setText(passworderror);
+    		passerror.setBounds(CENTERX/2, CENTERY/2 + 25, 220, 20);
+    		passerror.setForeground(display.getSystemColor(SWT.COLOR_RED));
+    	}
+    	
+    	Label passwordtxt = new Label(shell, SWT.NONE);
+    	passwordtxt.setText("Password:");
+    	passwordtxt.setBounds(CENTERX/2, CENTERY/2+50, textwidth, 20);
+    	final Text passwordbox = new Text(shell, SWT.PASSWORD | SWT.BORDER);
+    	passwordbox.setBounds(CENTERX/2 + 5 + textwidth, CENTERY/2+50, 100, 20);
+
+    	Label passwordtxt2 = new Label(shell, SWT.NONE);
+    	passwordtxt2.setText("Confirm password:");
+    	passwordtxt2.setBounds(CENTERX/2, CENTERY/2+75, textwidth, 20);
+    	final Text passwordbox2 = new Text(shell, SWT.PASSWORD | SWT.BORDER);
+    	passwordbox2.setBounds(CENTERX/2 + 5 + textwidth, CENTERY/2+75, 100, 20);
+    	
+    	Button btnsignup = new Button(shell, SWT.NONE);
+    	btnsignup.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			String pass1 = passwordbox.getText();
+    			String pass2 = passwordbox2.getText();
+    			if(!pass1.equals(pass2)){
+    				showCreateUser(null, "passwords don't match.");
+    				return;
+    			}
+    			
+    			if(!checkSecurity(pass1)){
+    				showCreateUser(null, "password must be at least 8 characters");
+    				return;
+    			}
+    			String response = sendCredentials(usernamebox.getText(), passwordbox.getText(), true);
+    			if("usernametaken".equals(response))
+    				showCreateUser("username not available", null);
+    			else if("success".equals(response))
+    				showMainMenu();
+    		}
+    	});
+    	btnsignup.setBounds(140, 239, 95, 28);
+    	btnsignup.setText("Sign Up");
+    	
+    	Button cancelbtn = new Button(shell, SWT.NONE);
+    	cancelbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			showLogin(false);
+    		}
+    	});
+    	cancelbtn.setBounds(240, 239, 95, 28);
+    	cancelbtn.setText("Cancel");
+	}
+
+	protected boolean checkSecurity(String pass1) {
+		
+		return pass1.length() >= 8;
+	}
+
+	protected String sendCredentials(String username, String password, boolean newuser) {
+		// TODO Auto-generated method stub
+		return "success";
+	}
+
+	private void clearContents(){
     	for (Control child : shell.getChildren()) {
     		child.dispose();
     	}
