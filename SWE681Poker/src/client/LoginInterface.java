@@ -7,14 +7,17 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.util.LinkedList;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -30,6 +33,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
@@ -46,6 +50,7 @@ public class LoginInterface {
     public static BufferedReader bufferedreader;
     public static OutputStreamWriter outputstreamwriter;
     public static BufferedWriter bufferedwriter;
+    public static PrintWriter printwriter;
     public SecretKey sessionKey;
     public String nonceString;
 
@@ -256,17 +261,67 @@ public class LoginInterface {
     }
 
 	protected void showOldGames() {
+		String[] gameliststr = new String[0]; //getGameList();
+		clearContents();
+    	Label title = new Label(shell, SWT.CENTER);
+    	title.setText("Previous games");
+    	title.setBounds(10, 10, WIDTH - 20, 40);
+    	
+		List gamelist = new List(shell, SWT.MULTI | SWT.BORDER);
+		int listwidth = 200;
+		int halfwidth = listwidth/2;
+		gamelist.setBounds(CENTERX-halfwidth, 60, listwidth, HEIGHT - 140);
+		for(int i=0; i<gameliststr.length; i++){
+			gamelist.add(gameliststr[i]);
+		}
+		
+		Rectangle rect = new Rectangle(CENTERX-halfwidth, HEIGHT-35, listwidth/2 - 5, 30);
+		Button selectbtn = createButton(shell, SWT.NONE, rect, "Select Game");
+		selectbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			showGameResult();
+    		}
+    	});
+		rect.x += rect.width + 10;
+		Button backbtn = createButton(shell, SWT.NONE, rect, "Main Menu");
+		backbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			showMainMenu();
+    		}
+    	});
+	}
+
+	protected void showGameResult() {
 		// TODO Auto-generated method stub
 		
 	}
 
+	private String[] getGameList() {
+		LinkedList<String> gamelist = new LinkedList<String>();
+		// TODO request game list from server
+		try {
+			printwriter.println("getgamelist");
+			String gamestr = "";
+			while(!"done".equals(gamestr)){
+				gamestr = bufferedreader.readLine();
+				gamelist.add(gamestr);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return (String[]) gamelist.toArray();
+	}
+
 	protected void showLeaderBoard() {
-		// TODO Auto-generated method stub
+		// TODO request leaderboard from server
 		
 	}
 
 	protected void showTableMenu() {
-		// TODO Auto-generated method stub
+		// TODO get list of tables from server
 		
 	}
 }
