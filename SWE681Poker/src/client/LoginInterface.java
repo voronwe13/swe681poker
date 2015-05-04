@@ -267,7 +267,7 @@ public class LoginInterface {
     	title.setText("Previous games");
     	title.setBounds(10, 10, WIDTH - 20, 40);
     	
-		List gamelist = new List(shell, SWT.MULTI | SWT.BORDER);
+		final List gamelist = new List(shell, SWT.SINGLE | SWT.BORDER);
 		int listwidth = 200;
 		int halfwidth = listwidth/2;
 		gamelist.setBounds(CENTERX-halfwidth, 60, listwidth, HEIGHT - 140);
@@ -280,7 +280,8 @@ public class LoginInterface {
 		selectbtn.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-    			showGameResult();
+    			int selected = gamelist.getSelectionIndex();
+    			showGameResult(selected);
     		}
     	});
 		rect.x += rect.width + 10;
@@ -293,7 +294,7 @@ public class LoginInterface {
     	});
 	}
 
-	protected void showGameResult() {
+	protected void showGameResult(int selected) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -320,8 +321,97 @@ public class LoginInterface {
 		
 	}
 
+	private String[] getTableList() {
+		LinkedList<String> tablelist = new LinkedList<String>();
+		// TODO request game list from server
+		try {
+			printwriter.println("gettablelist");
+			String tablestr = "";
+			while(!"done".equals(tablestr)){
+				tablestr = bufferedreader.readLine();
+				tablelist.add(tablestr);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return (String[]) tablelist.toArray();
+	}
 	protected void showTableMenu() {
-		// TODO get list of tables from server
+		String[] tableliststr = new String[0]; //getGameList();
+		clearContents();
+    	Label title = new Label(shell, SWT.CENTER);
+    	title.setText("Open Tables");
+    	title.setBounds(10, 10, WIDTH - 20, 40);
+    	
+		final List tablelist = new List(shell, SWT.MULTI | SWT.BORDER);
+		int listwidth = 200;
+		int halfwidth = listwidth/2;
+		tablelist.setBounds(CENTERX-halfwidth, 60, listwidth, HEIGHT - 140);
+		for(int i=0; i<tableliststr.length; i++){
+			tablelist.add(tableliststr[i]);
+		}
+		
+		Rectangle rect = new Rectangle(CENTERX-halfwidth, HEIGHT-35, listwidth/2 - 5, 30);
+		Button selectbtn = createButton(shell, SWT.NONE, rect, "Select Table");
+		selectbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			int selected = tablelist.getSelectionIndex(); 
+    			selectTable(selected);
+    		}
+    	});
+		rect.x += rect.width + 10;
+		Button backbtn = createButton(shell, SWT.NONE, rect, "Main Menu");
+		backbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			showMainMenu();
+    		}
+    	});
+	}
+
+	protected void selectTable(int selected) {
+		// TODO Auto-generated method stub
+		try {
+			printwriter.println("jointable");
+			String response = bufferedreader.readLine();
+			if("success".equals(response))
+				joinTable();
+			else {
+				//TODO: indicate it was unable to join the table
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void joinTable() {
+		clearContents();
+		showPlayers();
+		showPot();
+		showCommunityCards();
+		showJoinGame();
+	}
+
+	private void showPlayers() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void showPot() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void showCommunityCards() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void showJoinGame() {
+		// TODO Auto-generated method stub
 		
 	}
 }
