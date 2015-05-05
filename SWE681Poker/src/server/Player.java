@@ -62,7 +62,9 @@ public class Player {
 	 */
 	public void setHand(Card[] hand){
 		this.hand = hand;
-		//TODO: send hand (probably just int value of card) to the client
+		printwriter.println("sethand");
+		printwriter.println(hand[0].intvalue);
+		printwriter.println(hand[1].intvalue);
 	}
 	
 	/**

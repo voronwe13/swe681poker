@@ -72,4 +72,28 @@ public class PokerClientDummy extends PokerClient {
 	public String getPot() {
 		return "20";
 	}
+	
+	public void leaveTable() {
+	}
+
+	public boolean joinGame(int chips) {
+		return true;
+		
+	}
+
+	public int getChips() {
+		return 1000;
+	}
+
+	public String getCommand() {
+		return "";
+	}
+
+	public void sendBid(int bid) {
+	}
+
+	public Card[] getHand() {
+		Card[] hand = {new Card(40), new Card(41)};
+		return hand;
+	}
 }

@@ -27,6 +27,8 @@ public class LoginInterface {
     PokerClient client;
     private GameThread gamethread;
     String tablename;
+	private Text bidtext;
+	private Label handlabel;
 
     public LoginInterface() {
     	client = new PokerClientDummy();
@@ -431,8 +433,8 @@ public class LoginInterface {
     	final Text chipsbox = new Text(shell, SWT.BORDER);
     	chipsbox.setBounds(rect);
     	chipsbox.setText(Integer.toString(chips));
-		Button backbtn = createButton(shell, SWT.NONE, rect, "Join game");
-		backbtn.addSelectionListener(new SelectionAdapter() {
+		Button joinbtn = createButton(shell, SWT.NONE, rect, "Join game");
+		joinbtn.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
     			String chipstr = chipsbox.getText();
@@ -452,8 +454,51 @@ public class LoginInterface {
 	}
 
 	private void startGame() {
+		bidtext = new Text(shell, SWT.BORDER|SWT.RIGHT);
+		Rectangle rect = new Rectangle(10, HEIGHT - 110, 70, 30);
+    	Label chipstext = new Label(shell, SWT.NONE);
+    	chipstext.setText("Bid: $");
+    	chipstext.setBounds(rect);
+    	rect.x += 75;
+    	bidtext.setBounds(rect);
+    	bidtext.setText("0");
+		Button bidbtn = createButton(shell, SWT.NONE, rect, "Bid");
+		bidbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			String chipstr = bidtext.getText();
+    			int bid = 0;
+    			if(Pattern.matches("^[0-9]*$", chipstr)){
+    				bid = Integer.parseInt(chipstr);
+    				if(gamethread != null && gamethread.active)
+    					gamethread.setBid(bid);
+    			} else return;
+    		}
+    	});
 		gamethread = new GameThread(this);
 		Thread thread = new Thread(gamethread);
 		thread.start();
+	}
+
+	public void setBid(int newbid) {
+		final int bid = newbid;
+		display.asyncExec(new Runnable(){
+			@Override
+			public void run(){
+				bidtext.setText(""+bid);
+			}
+		});
+		
+	}
+
+	public void setHand(Card[] cards) {
+		final String card1 = cards[0].symbol;
+		final String card2 = cards[1].symbol;
+		display.asyncExec(new Runnable(){
+			@Override
+			public void run(){
+				handlabel.setText("Hand: "+card1+" "+card2);
+			}
+		});
 	}
 }

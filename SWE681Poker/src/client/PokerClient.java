@@ -244,4 +244,22 @@ public class PokerClient {
 		}
 		return "error";
 	}
+
+	public void sendBid(int bid) {
+		printwriter.println(""+bid);
+	}
+
+	public Card[] getHand() {
+		Card[] hand = new Card[2];
+		try {
+			String card = bufferedreader.readLine();
+			hand[0] = new Card(Integer.parseInt(card));
+			card = bufferedreader.readLine();
+			hand[1] = new Card(Integer.parseInt(card));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return hand;
+	}
 }
