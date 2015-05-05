@@ -47,86 +47,11 @@ public class LoginInterface {
 
     protected Shell shell;
     private Display display;
-    public static InputStreamReader inputstreamreader;
-    public static BufferedReader bufferedreader;
-    public static OutputStreamWriter outputstreamwriter;
-    public static BufferedWriter bufferedwriter;
-    public static PrintWriter printwriter;
-    public SecretKey sessionKey;
-    public String nonceString;
+    private PokerClient client;
+
 
     public LoginInterface() {
-    	try {
-    		System.setProperty("javax.net.ssl.trustStore", "clientTrustStore");
-    		System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-    		SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory
-    				.getDefault();
-    		SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(
-    				"localhost", 9999);
-
-    		InputStream inputstream = sslsocket.getInputStream();
-    		OutputStream outputstream = sslsocket.getOutputStream();
-
-    		ObjectOutputStream objectoutputstream = new ObjectOutputStream(
-    				outputstream);
-    		objectoutputstream.flush();
-    		ObjectInputStream objectinputstream = new ObjectInputStream(
-    				inputstream);
-    		// Generate the session key
-    		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-    		keyGen.init(128);
-    		sessionKey = keyGen.generateKey();
-    		// Generate the nonce
-    		SecureRandom nonce = new SecureRandom();
-    		nonceString = nonce.toString().substring(
-    				nonce.toString().length() - 8);
-    		System.out.println("Plain text: " + nonceString);
-    		// Generate IV
-    		SecureRandom random = new SecureRandom();
-    		String randomString = random.toString().substring(
-    				nonce.toString().length() - 8);
-    		randomString += randomString;
-    		byte[] iv = randomString.getBytes();
-    		while (iv.length != 16) {
-    			random = new SecureRandom();
-    			randomString = random.toString().substring(
-    					nonce.toString().length() - 8);
-    			randomString += randomString;
-    			iv = randomString.getBytes();
-    		}
-    		// Create the AES message object
-    		AesMessageStructure aesMessage = new AesMessageStructure(
-    				sessionKey, nonceString, randomString);
-    		// Send the AES message object
-    		objectoutputstream.writeObject(aesMessage);
-    		// Listen to server
-    		byte[] encryptedStringByteFromServer = (byte[]) objectinputstream
-    				.readObject();
-    		// reinitialize the cipher for decryption
-    		IvParameterSpec ivspec = new IvParameterSpec(iv);
-    		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-    		cipher.init(Cipher.DECRYPT_MODE, sessionKey, ivspec);
-
-    		// decrypt the message
-    		byte[] decrypted = cipher.doFinal(encryptedStringByteFromServer);
-    		System.out.println("Plaintext: " + new String(decrypted) + "\n");
-
-    		if (nonceString.equals(new String(decrypted))) {
-    			System.out.println("Client verified the server\n");
-    			Socket socket = new Socket("localhost", 9998); 
-    			// new Thread(new ClientThread(socket, sessionKey,
-    			// new IvParameterSpec(iv))).start();
-    			cipher.init(Cipher.ENCRYPT_MODE, sessionKey, ivspec);
-    			byte[] encryptedStringByte = cipher.doFinal(new String("Bu bir deneme kaydidir\n")
-    			.getBytes());
-    			ObjectOutputStream objectoutputstreamTemp = new ObjectOutputStream(
-    					socket.getOutputStream());
-    			objectoutputstreamTemp.writeObject(encryptedStringByte);
-    		}
-
-    	} catch (Exception exception) {
-    		exception.printStackTrace();
-    	}
+    	client = new PokerClient();
     }
 
     /*
@@ -216,7 +141,7 @@ public class LoginInterface {
     	btnsignin.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-    			String response = sendCredentials(usernamebox.getText(), passwordbox.getText(), true);
+    			String response = client.sendCredentials(usernamebox.getText(), passwordbox.getText(), true);
     			if("success".equals(response))
     				showMainMenu();
     			else 
@@ -283,7 +208,7 @@ public class LoginInterface {
     				showCreateUser(null, "password must be at least 8 characters");
     				return;
     			}
-    			String response = sendCredentials(usernamebox.getText(), passwordbox.getText(), true);
+    			String response = client.sendCredentials(usernamebox.getText(), passwordbox.getText(), true);
     			if("usernametaken".equals(response))
     				showCreateUser("username not available", null);
     			else if("success".equals(response))
@@ -307,11 +232,6 @@ public class LoginInterface {
 	protected boolean checkSecurity(String pass1) {
 		
 		return pass1.length() >= 8;
-	}
-
-	protected String sendCredentials(String username, String password, boolean newuser) {
-		// TODO Auto-generated method stub
-		return "success";
 	}
 
 	private void clearContents(){
@@ -400,44 +320,11 @@ public class LoginInterface {
 		
 	}
 
-	private String[] getGameList() {
-		LinkedList<String> gamelist = new LinkedList<String>();
-		// TODO request game list from server
-		try {
-			printwriter.println("getgamelist");
-			String gamestr = "";
-			while(!"done".equals(gamestr)){
-				gamestr = bufferedreader.readLine();
-				gamelist.add(gamestr);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return (String[]) gamelist.toArray();
-	}
-
 	protected void showLeaderBoard() {
 		// TODO request leaderboard from server
 		
 	}
 
-	private String[] getTableList() {
-		LinkedList<String> tablelist = new LinkedList<String>();
-		// TODO request game list from server
-		try {
-			printwriter.println("gettablelist");
-			String tablestr = "";
-			while(!"done".equals(tablestr)){
-				tablestr = bufferedreader.readLine();
-				tablelist.add(tablestr);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return (String[]) tablelist.toArray();
-	}
 	protected void showTableMenu() {
 		String[] tableliststr = new String[0]; //getGameList();
 		clearContents();
@@ -459,7 +346,8 @@ public class LoginInterface {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
     			int selected = tablelist.getSelectionIndex(); 
-    			selectTable(selected);
+    			if(client.selectTable(selected))
+    				joinTable();
     		}
     	});
 		rect.x += rect.width + 10;
@@ -472,22 +360,6 @@ public class LoginInterface {
     	});
 	}
 
-	protected void selectTable(int selected) {
-		// TODO Auto-generated method stub
-		try {
-			printwriter.println("jointable");
-			String response = bufferedreader.readLine();
-			if("success".equals(response))
-				joinTable();
-			else {
-				//TODO: indicate it was unable to join the table
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	private void joinTable() {
 		clearContents();
 		showPlayers();
@@ -497,7 +369,17 @@ public class LoginInterface {
 	}
 
 	private void showPlayers() {
-		// TODO Auto-generated method stub
+		String[] playerlist = client.getPlayerList();
+		Rectangle playerrect = new Rectangle(10, 40, WIDTH/3, 20);
+    	Label title = new Label(shell, SWT.CENTER);
+    	title.setText("Players");
+    	title.setBounds(10, 10, WIDTH - 20, 40);
+    	
+    	int dealer = client.getDealer();
+    	
+		for(int i=0; i<playerlist.length; i++){
+			
+		}
 		
 	}
 
