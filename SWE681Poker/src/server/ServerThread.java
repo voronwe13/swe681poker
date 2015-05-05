@@ -56,7 +56,7 @@ public class ServerThread implements Runnable {
 		if (clientRequestParts[0].equals("start a new table")) {
 		    for (int i = 0; i < activePokerTables.length; i++) {
 			if (activePokerTables[i] == null) {
-			    PokerTable clientTableThread = new PokerTable();
+			    PokerTable clientTableThread = new PokerTable(i);
 			    new Thread(pokerTableThread).start();
 			    Player player = new Player(1000, clientUsername);
 			    clientTableThread.addPlayer(player);

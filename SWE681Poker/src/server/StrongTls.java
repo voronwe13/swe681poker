@@ -48,6 +48,7 @@ public class StrongTls {
 
     };
 
+    
     /**
      * The SSL cipher suites that are enabled.
      */

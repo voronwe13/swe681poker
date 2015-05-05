@@ -16,7 +16,7 @@ public class Server {
 
 	    // Assuming that server is being started for the first time so
 	    // Lets start the PokerTable thread.
-	    PokerTable pokerTableThread = new PokerTable();
+	    PokerTable pokerTableThread = new PokerTable(0);
 	    new Thread(pokerTableThread).start();
 	    activePokerTables[0] = pokerTableThread;
 

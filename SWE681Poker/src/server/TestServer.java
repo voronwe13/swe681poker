@@ -26,7 +26,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
 
 public class TestServer {
-	private static final int PORT = 9753;
+	private static final int PORT = 9754;
 	private static final String FILEPATH = "\\server";
 	public static final int MAX_TABLES = 9;
 	public static final int MAX_PLAYERS = 60;
@@ -65,6 +65,7 @@ public class TestServer {
 			
 			SSLServerSocketFactory sslserversocketfactory = sslContext.getServerSocketFactory();
 			mysocket = (SSLServerSocket) sslserversocketfactory.createServerSocket(PORT);
+			mysocket.setNeedClientAuth(false);
 			
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block

@@ -24,82 +24,89 @@ import javax.net.ssl.SSLSocketFactory;
 import swe681poker.Card;
 
 public class PokerClient {
-    public static InputStreamReader inputstreamreader;
-    public static BufferedReader bufferedreader;
-    public static OutputStreamWriter outputstreamwriter;
-    public static BufferedWriter bufferedwriter;
-    public static PrintWriter printwriter;
-    public SecretKey sessionKey;
-    public String nonceString;
+	private static final int PORT = 9754;
+	private static final String SERVER = "localhost";
+	
+    private BufferedReader bufferedreader;
+    private PrintWriter printwriter;
+    private SSLSocket connection;
     
     public PokerClient(){
     	try {
     		System.setProperty("javax.net.ssl.trustStore", "clientTrustStore");
     		System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-    		SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory
-    				.getDefault();
-    		SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(
-    				"localhost", 9999);
-
-    		InputStream inputstream = sslsocket.getInputStream();
-    		OutputStream outputstream = sslsocket.getOutputStream();
-
-    		ObjectOutputStream objectoutputstream = new ObjectOutputStream(
-    				outputstream);
-    		objectoutputstream.flush();
-    		ObjectInputStream objectinputstream = new ObjectInputStream(
-    				inputstream);
-    		// Generate the session key
-    		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-    		keyGen.init(128);
-    		sessionKey = keyGen.generateKey();
-    		// Generate the nonce
-    		SecureRandom nonce = new SecureRandom();
-    		nonceString = nonce.toString().substring(
-    				nonce.toString().length() - 8);
-    		System.out.println("Plain text: " + nonceString);
-    		// Generate IV
-    		SecureRandom random = new SecureRandom();
-    		String randomString = random.toString().substring(
-    				nonce.toString().length() - 8);
-    		randomString += randomString;
-    		byte[] iv = randomString.getBytes();
-    		while (iv.length != 16) {
-    			random = new SecureRandom();
-    			randomString = random.toString().substring(
-    					nonce.toString().length() - 8);
-    			randomString += randomString;
-    			iv = randomString.getBytes();
-    		}
-    		// Create the AES message object
-    		AesMessageStructure aesMessage = new AesMessageStructure(
-    				sessionKey, nonceString, randomString);
-    		// Send the AES message object
-    		objectoutputstream.writeObject(aesMessage);
-    		// Listen to server
-    		byte[] encryptedStringByteFromServer = (byte[]) objectinputstream
-    				.readObject();
-    		// reinitialize the cipher for decryption
-    		IvParameterSpec ivspec = new IvParameterSpec(iv);
-    		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-    		cipher.init(Cipher.DECRYPT_MODE, sessionKey, ivspec);
-
-    		// decrypt the message
-    		byte[] decrypted = cipher.doFinal(encryptedStringByteFromServer);
-    		System.out.println("Plaintext: " + new String(decrypted) + "\n");
-
-    		if (nonceString.equals(new String(decrypted))) {
-    			System.out.println("Client verified the server\n");
-    			Socket socket = new Socket("localhost", 9998); 
-    			// new Thread(new ClientThread(socket, sessionKey,
-    			// new IvParameterSpec(iv))).start();
-    			cipher.init(Cipher.ENCRYPT_MODE, sessionKey, ivspec);
-    			byte[] encryptedStringByte = cipher.doFinal(new String("Bu bir deneme kaydidir\n")
-    			.getBytes());
-    			ObjectOutputStream objectoutputstreamTemp = new ObjectOutputStream(
-    					socket.getOutputStream());
-    			objectoutputstreamTemp.writeObject(encryptedStringByte);
-    		}
+//    		SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory
+//    				.getDefault();
+//    		SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(
+//    				"localhost", 9999);
+//
+//    		InputStream inputstream = sslsocket.getInputStream();
+//    		OutputStream outputstream = sslsocket.getOutputStream();
+//
+//    		ObjectOutputStream objectoutputstream = new ObjectOutputStream(
+//    				outputstream);
+//    		objectoutputstream.flush();
+//    		ObjectInputStream objectinputstream = new ObjectInputStream(
+//    				inputstream);
+//    		// Generate the session key
+//    		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+//    		keyGen.init(128);
+//    		sessionKey = keyGen.generateKey();
+//    		// Generate the nonce
+//    		SecureRandom nonce = new SecureRandom();
+//    		nonceString = nonce.toString().substring(
+//    				nonce.toString().length() - 8);
+//    		System.out.println("Plain text: " + nonceString);
+//    		// Generate IV
+//    		SecureRandom random = new SecureRandom();
+//    		String randomString = random.toString().substring(
+//    				nonce.toString().length() - 8);
+//    		randomString += randomString;
+//    		byte[] iv = randomString.getBytes();
+//    		while (iv.length != 16) {
+//    			random = new SecureRandom();
+//    			randomString = random.toString().substring(
+//    					nonce.toString().length() - 8);
+//    			randomString += randomString;
+//    			iv = randomString.getBytes();
+//    		}
+//    		// Create the AES message object
+//    		AesMessageStructure aesMessage = new AesMessageStructure(
+//    				sessionKey, nonceString, randomString);
+//    		// Send the AES message object
+//    		objectoutputstream.writeObject(aesMessage);
+//    		// Listen to server
+//    		byte[] encryptedStringByteFromServer = (byte[]) objectinputstream
+//    				.readObject();
+//    		// reinitialize the cipher for decryption
+//    		IvParameterSpec ivspec = new IvParameterSpec(iv);
+//    		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+//    		cipher.init(Cipher.DECRYPT_MODE, sessionKey, ivspec);
+//
+//    		// decrypt the message
+//    		byte[] decrypted = cipher.doFinal(encryptedStringByteFromServer);
+//    		System.out.println("Plaintext: " + new String(decrypted) + "\n");
+//
+//    		if (nonceString.equals(new String(decrypted))) {
+//    			System.out.println("Client verified the server\n");
+//    			Socket socket = new Socket("localhost", 9998); 
+//    			// new Thread(new ClientThread(socket, sessionKey,
+//    			// new IvParameterSpec(iv))).start();
+//    			cipher.init(Cipher.ENCRYPT_MODE, sessionKey, ivspec);
+//    			byte[] encryptedStringByte = cipher.doFinal(new String("Bu bir deneme kaydidir\n")
+//    			.getBytes());
+//    			ObjectOutputStream objectoutputstreamTemp = new ObjectOutputStream(
+//    					socket.getOutputStream());
+//    			objectoutputstreamTemp.writeObject(encryptedStringByte);
+//    		}
+    		
+    		 SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+             connection = (SSLSocket) sslsocketfactory.createSocket(SERVER, PORT);
+             connection.setUseClientMode(true);
+ 			
+             bufferedreader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+             printwriter = new PrintWriter(connection.getOutputStream(), true);
+    		
 
     	} catch (Exception exception) {
     		exception.printStackTrace();
@@ -119,6 +126,7 @@ public class PokerClient {
     			printwriter.println(password);
     			response = bufferedreader.readLine();
     		}
+    		System.out.println("Login response: "+response);
     		return response;
     	} catch (IOException e) {
     		// TODO Auto-generated catch block

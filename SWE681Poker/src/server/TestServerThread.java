@@ -98,25 +98,29 @@ public class TestServerThread implements Runnable {
 		try {
 			command = input.readLine();
 			boolean newuser = false;
-			if("authenticate".equals(command)){
-				if("newuser".equals(command)){
-					newuser = true;
-				}
-			} else {
+			newuser = "newuser".equals(command);
+			if(!("authenticate".equals(command) || newuser)){
 				System.out.println("possible attack, expecting authentication, got: "+command);
 				return false;
 			}
 			pw.println("ready");
 			String username = input.readLine();
 			String password = input.readLine();
+			System.out.println("Attempted login, username: "+username+", password: "+password);
 			if(newuser){
 				player = Player.createNewPlayer(username, password);
 			} else {
 				player = Player.authenticatePlayer(username, password);
 			}
-			if(player == null)
+			if(player == null){
+				System.out.println("Authentication failed.");
 				return false;
+			} 
+				
+			System.out.println("Authentication succeeded.");
+			pw.println("success");
 			TestServer.addPlayer(player);
+			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

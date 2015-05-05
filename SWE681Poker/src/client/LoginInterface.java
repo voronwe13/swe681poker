@@ -31,7 +31,8 @@ public class LoginInterface {
 	private Label handlabel;
 
     public LoginInterface() {
-    	client = new PokerClientDummy();
+    	client = new PokerClient();
+    	//client = new PokerClientDummy();
     }
 
     /*
@@ -121,7 +122,7 @@ public class LoginInterface {
     	btnsignin.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-    			String response = client.sendCredentials(usernamebox.getText(), passwordbox.getText(), true);
+    			String response = client.sendCredentials(usernamebox.getText(), passwordbox.getText(), false);
     			if("success".equals(response))
     				showMainMenu();
     			else 
