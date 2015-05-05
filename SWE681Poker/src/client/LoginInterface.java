@@ -1,31 +1,5 @@
 package client;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.security.SecureRandom;
-import java.util.LinkedList;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -38,7 +12,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
 
-import server.ServerThreadSsl;
+import swe681poker.Card;
+
 
 public class LoginInterface {
 
@@ -51,7 +26,7 @@ public class LoginInterface {
 
 
     public LoginInterface() {
-    	client = new PokerClient();
+    	client = new PokerClientDummy();
     }
 
     /*
@@ -282,7 +257,7 @@ public class LoginInterface {
     }
 
 	protected void showOldGames() {
-		String[] gameliststr = new String[0]; //getGameList();
+		String[] gameliststr = client.getGameList();
 		clearContents();
     	Label title = new Label(shell, SWT.CENTER);
     	title.setText("Previous games");
@@ -326,7 +301,7 @@ public class LoginInterface {
 	}
 
 	protected void showTableMenu() {
-		String[] tableliststr = new String[0]; //getGameList();
+		String[] tableliststr = client.getTableList();
 		clearContents();
     	Label title = new Label(shell, SWT.CENTER);
     	title.setText("Open Tables");
@@ -347,7 +322,7 @@ public class LoginInterface {
     		public void widgetSelected(SelectionEvent e) {
     			int selected = tablelist.getSelectionIndex(); 
     			if(client.selectTable(selected))
-    				joinTable();
+    				joinTable(tablelist.getSelection()[0]);
     		}
     	});
 		rect.x += rect.width + 10;
@@ -360,8 +335,13 @@ public class LoginInterface {
     	});
 	}
 
-	private void joinTable() {
+	private void joinTable(String tablename) {
 		clearContents();
+		
+    	Label title = new Label(shell, SWT.CENTER);
+    	title.setText(tablename);
+    	title.setBounds(10, 10, WIDTH - 20, 30);
+		
 		showPlayers();
 		showPot();
 		showCommunityCards();
@@ -393,7 +373,8 @@ public class LoginInterface {
 			player.setBounds(playerrect);
 		}
 
-		playerrect.y += 30;
+		playerrect.y = HEIGHT - 70;
+		playerrect.width = 300;
     	Label legend = new Label(shell, SWT.LEFT);
     	legend.setText("D - dealer, S - small blind, B - big blind");
     	legend.setBounds(playerrect);
@@ -405,7 +386,16 @@ public class LoginInterface {
 	}
 
 	private void showCommunityCards() {
-		// TODO Auto-generated method stub
+		Card[] cards = client.getCommunityCards();
+		String cardlist = "";
+		for(Card card:cards){
+			cardlist += card.suit.symbol + card.value.symbol + " ";
+		}
+		
+		Rectangle cardrect = new Rectangle(CENTERX, 80, CENTERX - 10, 20);
+    	Label title = new Label(shell, SWT.LEFT);
+    	title.setText("Cards: " + cardlist);
+    	title.setBounds(cardrect);		
 		
 	}
 

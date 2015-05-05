@@ -21,6 +21,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import swe681poker.Card;
+
 public class PokerClient {
     public static InputStreamReader inputstreamreader;
     public static BufferedReader bufferedreader;
@@ -183,5 +185,10 @@ public class PokerClient {
 			e.printStackTrace();
 		}
 		return -1;
+	}
+
+	public Card[] getCommunityCards() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
