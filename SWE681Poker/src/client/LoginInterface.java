@@ -357,12 +357,13 @@ public class LoginInterface {
 		showPot();
 		showCommunityCards();
 		
-		Rectangle rect = new Rectangle(CENTERX + 30, HEIGHT - 70, 70, 30);
+		Rectangle rect = new Rectangle(CENTERX + 50, HEIGHT - 70, 70, 30);
 		Button backbtn = createButton(shell, SWT.NONE, rect, "Main Menu");
 		backbtn.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-    			gamethread.quit();
+				if(gamethread != null && gamethread.active)
+					gamethread.quit();
     			client.leaveTable();
     			showMainMenu();
     		}
@@ -395,7 +396,7 @@ public class LoginInterface {
 		}
 
 		playerrect.y = HEIGHT - 70;
-		playerrect.width = 300;
+		playerrect.width = 250;
     	Label legend = new Label(shell, SWT.LEFT);
     	legend.setText("D - dealer, S - small blind, B - big blind");
     	legend.setBounds(playerrect);
@@ -425,14 +426,15 @@ public class LoginInterface {
 
 	private void showJoinGame() {
 		final int chips = client.getChips();
-		Rectangle rect = new Rectangle(10, HEIGHT - 110, 70, 30);
+		Rectangle rect = new Rectangle(10, HEIGHT - 110, 70, 25);
     	Label chipstext = new Label(shell, SWT.NONE);
     	chipstext.setText("Chips: $");
     	chipstext.setBounds(rect);
-    	rect.x += 75;
-    	final Text chipsbox = new Text(shell, SWT.BORDER);
+    	rect.x += rect.width + 5;
+    	final Text chipsbox = new Text(shell, SWT.BORDER|SWT.RIGHT);
     	chipsbox.setBounds(rect);
     	chipsbox.setText(Integer.toString(chips));
+    	rect.x += rect.width + 5;
 		Button joinbtn = createButton(shell, SWT.NONE, rect, "Join game");
 		joinbtn.addSelectionListener(new SelectionAdapter() {
     		@Override
@@ -451,17 +453,20 @@ public class LoginInterface {
     			else return;
     		}
     	});
+		joinbtn.setBounds(rect);
 	}
 
 	private void startGame() {
+		showGame();
 		bidtext = new Text(shell, SWT.BORDER|SWT.RIGHT);
-		Rectangle rect = new Rectangle(10, HEIGHT - 110, 70, 30);
+		Rectangle rect = new Rectangle(10, HEIGHT - 110, 70, 25);
     	Label chipstext = new Label(shell, SWT.NONE);
     	chipstext.setText("Bid: $");
     	chipstext.setBounds(rect);
-    	rect.x += 75;
+    	rect.x += rect.width + 5;
     	bidtext.setBounds(rect);
     	bidtext.setText("0");
+    	rect.x += rect.width + 5;
 		Button bidbtn = createButton(shell, SWT.NONE, rect, "Bid");
 		bidbtn.addSelectionListener(new SelectionAdapter() {
     		@Override
@@ -475,6 +480,7 @@ public class LoginInterface {
     			} else return;
     		}
     	});
+		bidbtn.setBounds(rect);
 		gamethread = new GameThread(this);
 		Thread thread = new Thread(gamethread);
 		thread.start();
