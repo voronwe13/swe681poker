@@ -1,5 +1,10 @@
 package server;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.regex.Pattern;
+
 import swe681poker.Card;
 
 public class Player {
@@ -9,6 +14,8 @@ public class Player {
 	boolean active;  //whether player is in current game
 	int tablenumber;	//which table the player is currently playing at
 	int seatnumber;		//which seat at the table the player is at
+	PrintWriter printwriter;   //bound to socket output
+	BufferedReader bufferedreader;	//bound to socket input
 	//client socket to communicate with this player.
 	//other stats for the player
 	
@@ -26,8 +33,27 @@ public class Player {
 	 * @return				Amount of bid.  -1 for check/call, -2 for fold.
 	 */
 	public int getBid(int timeout){
-		//TODO: get bid from the client
-		return 0;
+		try {
+			printwriter.println("getbid");
+			String bidstr = bufferedreader.readLine();
+			int bid = 0;
+			if(Pattern.matches("^[0-9]+$", bidstr)) //only allow positive numbers
+				bid = Integer.parseInt(bidstr);
+			else {
+				System.out.println("attack detected, invalid bid string: "+bidstr);
+				return -2;
+			}
+			if(bid > money){
+				System.out.println("attack detected: bid larger than available money");
+				return -2;
+			}
+				
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return -2;
 	}
 	
 	/**

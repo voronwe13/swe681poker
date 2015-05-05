@@ -1,5 +1,7 @@
 package client;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -21,9 +23,10 @@ public class LoginInterface {
 	final int CENTERX = WIDTH/2, CENTERY = HEIGHT/2;
 
     protected Shell shell;
-    private Display display;
-    private PokerClient client;
-
+    Display display;
+    PokerClient client;
+    private GameThread gamethread;
+    String tablename;
 
     public LoginInterface() {
     	client = new PokerClientDummy();
@@ -336,6 +339,12 @@ public class LoginInterface {
 	}
 
 	private void joinTable(String tablename) {
+		this.tablename = tablename;
+		showGame();
+		showJoinGame();
+	}
+	
+	void showGame(){
 		clearContents();
 		
     	Label title = new Label(shell, SWT.CENTER);
@@ -345,7 +354,17 @@ public class LoginInterface {
 		showPlayers();
 		showPot();
 		showCommunityCards();
-		showJoinGame();
+		
+		Rectangle rect = new Rectangle(CENTERX + 30, HEIGHT - 70, 70, 30);
+		Button backbtn = createButton(shell, SWT.NONE, rect, "Main Menu");
+		backbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			gamethread.quit();
+    			client.leaveTable();
+    			showMainMenu();
+    		}
+    	});		
 	}
 
 	private void showPlayers() {
@@ -381,8 +400,11 @@ public class LoginInterface {
 	}
 
 	private void showPot() {
-		// TODO Auto-generated method stub
-		
+		String pot = client.getPot();
+		Rectangle potrect = new Rectangle(CENTERX, 120, CENTERX - 10, 20);
+    	Label potlabel = new Label(shell, SWT.LEFT);
+    	potlabel.setText("Pot: $"+pot);
+    	potlabel.setBounds(potrect);
 	}
 
 	private void showCommunityCards() {
@@ -400,7 +422,38 @@ public class LoginInterface {
 	}
 
 	private void showJoinGame() {
-		// TODO Auto-generated method stub
-		
+		final int chips = client.getChips();
+		Rectangle rect = new Rectangle(10, HEIGHT - 110, 70, 30);
+    	Label chipstext = new Label(shell, SWT.NONE);
+    	chipstext.setText("Chips: $");
+    	chipstext.setBounds(rect);
+    	rect.x += 75;
+    	final Text chipsbox = new Text(shell, SWT.BORDER);
+    	chipsbox.setBounds(rect);
+    	chipsbox.setText(Integer.toString(chips));
+		Button backbtn = createButton(shell, SWT.NONE, rect, "Join game");
+		backbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			String chipstr = chipsbox.getText();
+    			int joinchips = 0;
+    			if(Pattern.matches("^[0-9]*$", chipstr)){
+    				joinchips = Integer.parseInt(chipstr);
+    				if(joinchips > chips)
+    					joinchips = chips;
+    				if(joinchips == 0)
+    					return;
+    			} else return;
+    			if(client.joinGame(joinchips))
+    				startGame();
+    			else return;
+    		}
+    	});
+	}
+
+	private void startGame() {
+		gamethread = new GameThread(this);
+		Thread thread = new Thread(gamethread);
+		thread.start();
 	}
 }

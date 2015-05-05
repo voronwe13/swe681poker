@@ -191,4 +191,57 @@ public class PokerClient {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String getPot() {
+		try {
+			printwriter.println("getpot");
+			String potstr = bufferedreader.readLine();
+			return potstr;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "0";
+	}
+
+	public void leaveTable() {
+		printwriter.println("leavetable");
+	}
+
+	public boolean joinGame(int chips) {
+		try {
+			printwriter.println("joingame");
+			printwriter.println(""+chips);
+			String response = bufferedreader.readLine();
+			return "success".equals(response);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;		
+		
+	}
+
+	public int getChips() {
+		try {
+			printwriter.println("getchips");
+			String chipstr = bufferedreader.readLine();
+			return Integer.parseInt(chipstr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public String getCommand() {
+		try {
+			String command = bufferedreader.readLine();
+			return command;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "error";
+	}
 }

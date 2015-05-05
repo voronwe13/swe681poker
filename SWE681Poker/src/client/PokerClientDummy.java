@@ -68,4 +68,8 @@ public class PokerClientDummy extends PokerClient {
 		Card[] cardlist = {new Card(1), new Card(13), new Card(20)};
 		return cardlist;
 	}
+	
+	public String getPot() {
+		return "20";
+	}
 }
