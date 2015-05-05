@@ -176,7 +176,7 @@ public class PokerClient {
 	public int getDealer() {
 		try {
 			printwriter.println("getdealer");
-			String dealerstr  = bufferedreader.readLine();
+			String dealerstr = bufferedreader.readLine();
 			return Integer.parseInt(dealerstr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

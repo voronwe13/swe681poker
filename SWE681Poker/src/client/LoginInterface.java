@@ -371,16 +371,32 @@ public class LoginInterface {
 	private void showPlayers() {
 		String[] playerlist = client.getPlayerList();
 		Rectangle playerrect = new Rectangle(10, 40, WIDTH/3, 20);
-    	Label title = new Label(shell, SWT.CENTER);
+    	Label title = new Label(shell, SWT.LEFT);
     	title.setText("Players");
-    	title.setBounds(10, 10, WIDTH - 20, 40);
+    	title.setBounds(playerrect);
     	
     	int dealer = client.getDealer();
+    	int smallblind = (dealer + 1)%playerlist.length;
+    	int bigblind = (dealer + 2)%playerlist.length;
     	
 		for(int i=0; i<playerlist.length; i++){
-			
+			playerrect.y += 22; 
+			Label player = new Label(shell, SWT.LEFT);
+			String seat = Integer.toString(i) + ". ";
+			if(dealer == i)
+				seat += "D ";
+			if(smallblind == i)
+				seat += "S ";
+			if(bigblind == i)
+				seat += "B ";
+			player.setText(seat + playerlist[i]);
+			player.setBounds(playerrect);
 		}
-		
+
+		playerrect.y += 30;
+    	Label legend = new Label(shell, SWT.LEFT);
+    	legend.setText("D - dealer, S - small blind, B - big blind");
+    	legend.setBounds(playerrect);
 	}
 
 	private void showPot() {
