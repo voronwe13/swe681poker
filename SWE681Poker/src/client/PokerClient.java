@@ -162,9 +162,9 @@ public class PokerClient {
 	}
 	
 	boolean selectTable(int selected) {
-		// TODO Auto-generated method stub
 		try {
 			printwriter.println("jointable");
+			printwriter.println(selected);
 			String response = bufferedreader.readLine();
 			return "success".equals(response);
 		} catch (IOException e) {

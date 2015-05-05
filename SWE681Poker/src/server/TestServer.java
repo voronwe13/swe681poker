@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -25,21 +26,22 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
 
 public class TestServer {
-	private static final String SERVER_ADDRESS = "127.0.0.1";
 	private static final int PORT = 9753;
 	private static final String FILEPATH = "\\server";
+	public static final int MAX_TABLES = 9;
+	public static final int MAX_PLAYERS = 60;
 	private static SSLServerSocket mysocket;
 	private static boolean serveractive = true;
 	
-	private List<PokerTable> tables;
-	private List<Player> players;	
+	private static List<PokerTable> tables;
+	private static List<Player> players;	
 	
 	private static void startServer() {
 		//Code adapted from http://blog.trifork.com/2009/11/10/securing-connections-with-tls/
 		try{
 			// Key store for your own private key and signing certificates
 			InputStream keyStoreResource = new FileInputStream("mySrvKeystore");
-			char[] keyStorePassphrase = "secret".toCharArray();
+			char[] keyStorePassphrase = "123456".toCharArray();
 			KeyStore ksKeys = KeyStore.getInstance("JKS");
 			ksKeys.load(keyStoreResource, keyStorePassphrase);
 			
@@ -50,7 +52,7 @@ public class TestServer {
 			// Trust store contains certificates of trusted certificate authorities.
 			// Needed for client certificate validation.
 			InputStream trustStoreIS = new FileInputStream("clientTruststore");
-			char[] trustStorePassphrase = "secret".toCharArray();
+			char[] trustStorePassphrase = "123456".toCharArray();
 			KeyStore ksTrust = KeyStore.getInstance("JKS");
 			ksTrust.load(trustStoreIS, trustStorePassphrase);
 			
@@ -90,6 +92,7 @@ public class TestServer {
 			System.exit(1);
 		}
 		System.out.println("Server ready, now listening for connections...");
+		createTable();
 		while(serveractive){
 			try{
 				SSLSocket socket = (SSLSocket) mysocket.accept();
@@ -107,6 +110,18 @@ public class TestServer {
 				
 			}
 		}
+	}
+	
+	static void createTable(){
+		System.out.println("Creating table...");
+		if(tables == null)
+			tables = new ArrayList<PokerTable>(MAX_TABLES);
+		if(tables.size() >= MAX_TABLES)
+			return;
+		PokerTable table = new PokerTable(tables.size());
+		tables.add(table);
+		Thread thread = new Thread(table);
+		thread.start();
 	}
 
 	
@@ -126,10 +141,26 @@ public class TestServer {
 	}
 	
 
-
+	public static int getNumTables(){
+		return tables.size();
+	}
 
 	
 	public static void main(String [] args){
 		startServer();
+	}
+
+	public static void addPlayer(Player player) {
+		if(players == null)
+			players = new ArrayList<Player>(MAX_PLAYERS);
+		players.add(player);
+		if(players.size()/6 > tables.size()){
+			createTable();
+		}
+	}
+
+	public static PokerTable getTable(int tablenum) {
+		// TODO Auto-generated method stub
+		return tables.get(tablenum);
 	}
 }

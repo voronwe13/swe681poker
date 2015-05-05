@@ -23,6 +23,8 @@ public class Player {
 		money = startingmoney;
 		active = false;
 		username = usernameInput;
+		tablenumber = -1;
+		seatnumber = -1;
 	}
 	
 	
@@ -121,7 +123,7 @@ public class Player {
 	 */
 	public static Player createNewPlayer(String username, String password) {
 		// TODO check username/password, then create account
-		return new Player(1000);
+		return new Player(1000, username);
 	}
 
 	/**
@@ -136,7 +138,7 @@ public class Player {
 		// TODO check username/password, return player
 		int chips = 1000; //TODO: get from stored player data
 		
-		return new Player(chips);
+		return new Player(chips, username);
 	}
 	
 }

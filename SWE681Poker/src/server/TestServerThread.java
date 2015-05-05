@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.regex.Pattern;
 
 public class TestServerThread implements Runnable {
 
@@ -43,12 +44,53 @@ public class TestServerThread implements Runnable {
 		while(active){
 			try {
 				String command = input.readLine();
-				
+				switch(command){
+					case "getgamelist": getOldGames();
+									break;
+					case "gettablelist": getTableList();
+									break;
+					case "jointable": joinTable();
+									break;
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void joinTable() throws IOException {
+		// TODO 
+		String tablenumstr = input.readLine();
+		int tablenum = -1;
+		if(Pattern.matches("[0-9]{1,2}", tablenumstr))
+			tablenum = Integer.parseInt(tablenumstr);
+		if(tablenum < 0 || tablenum > TestServer.getNumTables()){
+			System.out.println("possible attack, requested tablenum: "+tablenumstr);
+			pw.println("failure");
+			return;
+		}
+			
+		PokerTable table = TestServer.getTable(tablenum);
+		table.addPlayer(player);
+		String command = input.readLine();
+		switch(command){
+			case "joingame": break;
+			case "leavetable": return;
+		}		
+		while(player.tablenumber >= 0){
+
+		}
+	}
+
+	private void getTableList() throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void getOldGames() throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private boolean authenticateUser() {
@@ -74,6 +116,7 @@ public class TestServerThread implements Runnable {
 			}
 			if(player == null)
 				return false;
+			TestServer.addPlayer(player);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
