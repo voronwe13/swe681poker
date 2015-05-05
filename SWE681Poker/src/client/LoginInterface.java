@@ -172,7 +172,7 @@ public class LoginInterface {
     protected void createLoginContents() {
     	shell = new Shell();
     	shell.setSize(WIDTH, HEIGHT);
-    	shell.setText("Log in");
+    	shell.setText("SecurePoker");
     	showLogin(false);
 
     }
@@ -376,7 +376,7 @@ public class LoginInterface {
 			gamelist.add(gameliststr[i]);
 		}
 		
-		Rectangle rect = new Rectangle(CENTERX-halfwidth, HEIGHT-35, listwidth/2 - 5, 30);
+		Rectangle rect = new Rectangle(CENTERX-halfwidth, HEIGHT-75, listwidth/2 - 5, 30);
 		Button selectbtn = createButton(shell, SWT.NONE, rect, "Select Game");
 		selectbtn.addSelectionListener(new SelectionAdapter() {
     		@Override
@@ -453,7 +453,7 @@ public class LoginInterface {
 			tablelist.add(tableliststr[i]);
 		}
 		
-		Rectangle rect = new Rectangle(CENTERX-halfwidth, HEIGHT-35, listwidth/2 - 5, 30);
+		Rectangle rect = new Rectangle(CENTERX-halfwidth, HEIGHT-75, listwidth/2 - 5, 30);
 		Button selectbtn = createButton(shell, SWT.NONE, rect, "Select Table");
 		selectbtn.addSelectionListener(new SelectionAdapter() {
     		@Override
