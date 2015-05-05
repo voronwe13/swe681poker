@@ -14,17 +14,19 @@ public class ServerThread implements Runnable {
     public SecretKey sessionKey;
     public IvParameterSpec ivspec;
     public Cipher cipher;
-    public table.GameCoordinator gameCoordinator;
+    public PokerTable pokerTableThread;
+    public PokerTable[] activePokerTables;
 
     public ServerThread(Socket socketInput, SecretKey sessionKeyInput,
-	    IvParameterSpec ivspecInput,
-	    table.GameCoordinator gameCoordinatorInput) {
+	    IvParameterSpec ivspecInput, PokerTable pokerTableThreadInput,
+	    PokerTable[] activePokerTablesInput) {
 	try {
 	    socket = socketInput;
 	    sessionKey = sessionKeyInput;
 	    ivspec = ivspecInput;
 	    cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-	    gameCoordinator = gameCoordinatorInput;
+	    pokerTableThread = pokerTableThreadInput;
+	    activePokerTables = activePokerTablesInput;
 	} catch (Exception exception) {
 	    exception.printStackTrace();
 	}
@@ -47,28 +49,36 @@ public class ServerThread implements Runnable {
 		clientRequest = new String(decrypted);
 		String[] clientRequestParts = clientRequest.split("\\+");
 		String clientUsername = clientRequestParts[1];
-		if (clientRequestParts[0].equals("create a new game")) {
-		    if (!gameCoordinator.checkClient(clientUsername)) {
-			table.Game game = new table.Game();
-			gameCoordinator.addClientToANewGame(clientUsername, game);
-			System.out.println("Created a new game\n");
-		    } else {
-			// deny
-			System.out.println("Denied to create a game\n");
+
+		// We need to decide what information has be to returned and
+		// agree on the message protocol for each of these cases
+
+		if (clientRequestParts[0].equals("start a new table")) {
+		    for (int i = 0; i < activePokerTables.length; i++) {
+			if (activePokerTables[i] == null) {
+			    PokerTable clientTableThread = new PokerTable();
+			    new Thread(pokerTableThread).start();
+			    Player player = new Player(1000, clientUsername);
+			    clientTableThread.addPlayer(player);
+			    activePokerTables[i] = clientTableThread;
+			}
 		    }
 		}
-		if (clientRequestParts[0].equals("check for games")) {
-		    
-		}
-		if (clientRequestParts[0].equals("join a game")) {
-		    if (!gameCoordinator.checkClient(clientUsername)) {
-			
-		    } else {
-			// deny because player is only allowed to play one game
-			// at a time
-			//
-			System.out.println("Denied to join a game\n");
+		if (clientRequestParts[0].equals("check for tables")) {
+		    String clientReturn = "availableTables";
+		    for (int i = 0; i < activePokerTables.length; i++) {
+			if (activePokerTables[i] != null
+				&& activePokerTables[i].isThereAvailableSeat()) {
+			    clientReturn += "+"
+				    + activePokerTables[i]
+					    .currentlyRegisteredPlayers();
+			}
 		    }
+		}
+		
+		if (clientRequestParts[0].equals("join a table")) {
+		    Player player = new Player(1000, clientUsername);
+		    //Here we need to identify which table he wants to join
 		}
 	    }
 	} catch (Exception exception) {

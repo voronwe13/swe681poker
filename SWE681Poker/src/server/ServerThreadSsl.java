@@ -11,14 +11,18 @@ public class ServerThreadSsl implements Runnable {
     public ObjectInputStream objectinputstream;
     public ObjectOutputStream objectoutputstream;
     public ServerSocket serverSocket;
-    public table.GameCoordinator gameCoordinator;
+    public PokerTable pokerTableThread;
+    public PokerTable[] activePokerTables;
 
     public ServerThreadSsl(ObjectInputStream objectinputstreamInput,
-	    ObjectOutputStream objectoutputstreamInput,ServerSocket socketInput, table.GameCoordinator gameCoordinatorInput) {
+	    ObjectOutputStream objectoutputstreamInput,
+	    ServerSocket socketInput, PokerTable pokerTableThreadInput,
+	    PokerTable[] activePokerTablesInput) {
 	objectinputstream = objectinputstreamInput;
 	objectoutputstream = objectoutputstreamInput;
-	serverSocket=socketInput;
-	gameCoordinator=gameCoordinatorInput;
+	serverSocket = socketInput;
+	pokerTableThread = pokerTableThreadInput;
+	activePokerTables = activePokerTablesInput;
     }
 
     public void run() {
@@ -41,10 +45,11 @@ public class ServerThreadSsl implements Runnable {
 	    objectoutputstream.writeObject(encryptedStringByte);
 
 	    Socket socket = serverSocket.accept();
-	    
+
 	    System.out.println("Ben server olarak baglantiyi kabul ettim\n");
-	    
-	    new Thread(new ServerThread(socket, sessionKey, ivspec,gameCoordinator)).start();
+
+	    new Thread(new ServerThread(socket, sessionKey, ivspec,
+		    pokerTableThread, activePokerTables)).start();
 
 	} catch (Exception exception) {
 	    exception.printStackTrace();

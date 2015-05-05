@@ -19,9 +19,10 @@ public class Player {
 	//client socket to communicate with this player.
 	//other stats for the player
 	
-	public Player(int startingmoney){
+	public Player(int startingmoney,String usernameInput){
 		money = startingmoney;
 		active = false;
+		username = usernameInput;
 	}
 	
 	
