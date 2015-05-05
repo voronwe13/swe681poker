@@ -110,5 +110,32 @@ public class Player {
 	public void newPlayerAdded(Player newplayer){
 		//TODO: send player data to client
 	}
+
+
+	/**
+	 * Creates a new user account, and returns a new player object.
+	 * @param username	the requested username for the account
+	 * @param password	the requested password for the account
+	 * @return			new Player object, or null if username or password are not valid
+	 */
+	public static Player createNewPlayer(String username, String password) {
+		// TODO check username/password, then create account
+		return new Player(1000);
+	}
+
+	/**
+	 * Authenticates with an existing user account, and returns a new player object with the
+	 * stored player's data.
+	 * 
+	 * @param username	the username for the account
+	 * @param password	the password for the account
+	 * @return			new Player object, or null if username or password are not valid
+	 */
+	public static Player authenticatePlayer(String username, String password) {
+		// TODO check username/password, return player
+		int chips = 1000; //TODO: get from stored player data
+		
+		return new Player(chips);
+	}
 	
 }

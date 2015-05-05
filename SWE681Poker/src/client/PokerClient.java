@@ -106,10 +106,26 @@ public class PokerClient {
     	}
     }
     
-	String sendCredentials(String username, String password, boolean newuser) {
-		// TODO Auto-generated method stub
-		return "success";
-	}
+    String sendCredentials(String username, String password, boolean newuser) {
+    	try {
+    		if(newuser){
+    			printwriter.println("newuser");
+    		} else {
+    			printwriter.println("authenticate");
+    		}
+    		String response = bufferedreader.readLine();
+    		if("ready".equals(response)){
+    			printwriter.println(username);
+    			printwriter.println(password);
+    			response = bufferedreader.readLine();
+    		}
+    		return response;
+    	} catch (IOException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
+    	return "failure";
+    }
 	
 	String[] getGameList() {
 		LinkedList<String> gamelist = new LinkedList<String>();
