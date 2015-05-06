@@ -244,4 +244,17 @@ public class PokerClient {
 		}
 		return hand;
 	}
+	
+	public void closeConnections(){
+		try {
+			printwriter.println("quit");
+			bufferedreader.close();
+			printwriter.close();
+			connection.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }

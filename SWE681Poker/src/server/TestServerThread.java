@@ -55,6 +55,7 @@ public class TestServerThread implements Runnable {
 									break;
 					case "jointable": joinTable();
 									break;
+					case "quit": active = false;
 				}
 				Thread.sleep(500);
 			}

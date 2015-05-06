@@ -70,6 +70,7 @@ public class LoginInterface {
     		}
     	}
     	display.dispose();
+    	client.closeConnections();
     }
 
     /**
