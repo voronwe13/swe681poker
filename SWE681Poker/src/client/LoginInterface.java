@@ -385,7 +385,7 @@ public class LoginInterface {
 		for(int i=0; i<playerlist.length; i++){
 			playerrect.y += 22; 
 			Label player = new Label(shell, SWT.LEFT);
-			String seat = Integer.toString(i) + ". ";
+			String seat = Integer.toString(i+1) + ". ";
 			if(dealer == i)
 				seat += "D ";
 			if(smallblind == i)
@@ -427,7 +427,7 @@ public class LoginInterface {
 
 	private void showJoinGame() {
 		final int chips = client.getChips();
-		Rectangle rect = new Rectangle(10, HEIGHT - 110, 70, 25);
+		Rectangle rect = new Rectangle(CENTERX, HEIGHT - 110, 70, 25);
     	Label chipstext = new Label(shell, SWT.NONE);
     	chipstext.setText("Chips: $");
     	chipstext.setBounds(rect);

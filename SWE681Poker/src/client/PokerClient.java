@@ -128,10 +128,10 @@ public class PokerClient {
 		// TODO request game list from server
 		try {
 			printwriter.println("getplayerlist");
-			String playerstr = "";
+			String playerstr = bufferedreader.readLine();
 			while(!"done".equals(playerstr)){
-				playerstr = bufferedreader.readLine();
 				playerlist.add(playerstr);
+				playerstr = bufferedreader.readLine();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -153,8 +153,25 @@ public class PokerClient {
 	}
 
 	public Card[] getCommunityCards() {
-		// TODO Auto-generated method stub
-		return null;
+		LinkedList<Integer> cardlist = new LinkedList<Integer>();
+		// TODO request game list from server
+		try {
+			printwriter.println("getcommunitycards");
+			String cardstr = "";
+			cardstr = bufferedreader.readLine();
+			while(!"done".equals(cardstr)){
+				cardlist.add(Integer.parseInt(cardstr));
+				cardstr = bufferedreader.readLine();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Card[] cards = new Card[cardlist.size()];
+		for(int i=0; i<cards.length; i++){
+			cards[i] = new Card(cardlist.get(i));
+		}
+		return cards;
 	}
 
 	public String getPot() {

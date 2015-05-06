@@ -9,6 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.regex.Pattern;
 
+import swe681poker.Card;
+
 public class TestServerThread implements Runnable {
 
 	private static final int MAX_TRIES = 5;
@@ -92,14 +94,21 @@ public class TestServerThread implements Runnable {
 			while(player.tablenumber >= 0){
 
 				String command = input.readLine();
+				System.out.println("got command: " + command);
 				switch(command){
 					case "getplayerlist": sendPlayerList();
 									break;
 					case "getpot": sendPot();
 									break;
+					case "getchips": sendChips();
+									break;
 					case "getdealer": sendDealer();
 									break;
+					case "getcommunitycards": sendCommunityCards();
+									break;
 					case "joingame": joinGame();
+									break;
+					case "leavetable": currenttable.removePlayer(player);
 									break;
 				}
 				Thread.sleep(500);
@@ -114,30 +123,61 @@ public class TestServerThread implements Runnable {
 		
 	}
 
+
+	private void sendChips() {
+		String sendstr = ""+player.money;
+		System.out.println("sending: "+sendstr);
+		pw.println(sendstr);
+		
+	}
+
+	private void sendCommunityCards() {
+		if(currenttable.game != null){
+			Card[] cards = currenttable.game.communitycards;
+			for(int i=0; i < cards.length; i++){
+				if(cards[i] == null){
+					break;
+				} else {
+					System.out.println("sending: "+cards[i].intvalue);
+					pw.println(""+cards[i].intvalue);
+				}
+			}
+		}
+		pw.println("done");
+	}
+
 	private void joinGame() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	private void sendDealer() {
-		// TODO Auto-generated method stub
+		String sendstr = ""+currenttable.dealer;
+		System.out.println("sending: "+sendstr);
+		pw.println(sendstr);
 		
 	}
 
 	private void sendPot() {
-		// TODO Auto-generated method stub
-		
+		String sendstr;
+		if(currenttable.game != null)
+			sendstr = ""+currenttable.game.pot;
+		else
+			sendstr = "0";
+		System.out.println("sending: "+sendstr);
+		pw.println(sendstr);
 	}
 
 	private void sendPlayerList() {
 		Player[] players = currenttable.players;
 		for(int i=0; i < players.length; i++){
-			String seatstr = i+". ";
+			String seatstr = "";// = i+". ";
 			if(players[i] == null){
-				seatstr += "seat empty.";
+				seatstr += "seat empty";
 			} else {
 				seatstr += players[i].username;
 			}
+			System.out.println("sending: "+seatstr);
 			pw.println(seatstr);
 		}
 		pw.println("done");

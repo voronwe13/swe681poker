@@ -52,26 +52,24 @@ public class Player {
      */
     public int getBid(int timeout) {
 	try {
-	    printwriter.println("getbid");
-	    String bidstr = bufferedreader.readLine();
-	    int bid = 0;
-	    if (Pattern.matches("^[0-9]+$", bidstr)) // only allow positive
-						     // numbers
-		bid = Integer.parseInt(bidstr);
-	    else {
-		System.out.println("attack detected, invalid bid string: "
-			+ bidstr);
-		return -2;
-	    }
-	    if (bid > money) {
-		System.out
-			.println("attack detected: bid larger than available money");
-		return -2;
-	    }
+		printwriter.println("getbid");
+		String bidstr = bufferedreader.readLine();
+		int bid = 0;
+		if (Pattern.matches("^[0-9]+$", bidstr)) // only allow positive
+			// numbers
+			bid = Integer.parseInt(bidstr);
+		else {
+			System.out.println("attack detected, invalid bid string: "+ bidstr);
+			return -2;
+		}
+		if (bid > money) {
+			System.out.println("attack detected: bid larger than available money");
+			return -2;
+		}
 
 	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
 
 	return -2;
@@ -85,10 +83,10 @@ public class Player {
      *            Hand dealt by table
      */
     public void setHand(Card[] hand) {
-	this.hand = hand;
-	printwriter.println("sethand");
-	printwriter.println(hand[0].intvalue);
-	printwriter.println(hand[1].intvalue);
+    	this.hand = hand;
+    	printwriter.println("sethand");
+    	printwriter.println(hand[0].intvalue);
+    	printwriter.println(hand[1].intvalue);
     }
 
     /**
@@ -97,7 +95,7 @@ public class Player {
      * @param flop
      */
     public void sendFlop(Card[] flop) {
-	// TODO: send 3 card flop to the client (int values for cards)
+    	// TODO: send 3 card flop to the client (int values for cards)
     }
 
     /**
@@ -107,7 +105,7 @@ public class Player {
      * @param card
      */
     public void sendCard(Card card) {
-	// TODO: send card to client
+    	// TODO: send card to client
     }
 
     /**
@@ -118,8 +116,8 @@ public class Player {
      *            array position of dealer in players.
      */
     public void setDealer(int dealer) {
-	// TODO send dealer number to client so it can show which seat is the
-	// dealer
+    	// TODO send dealer number to client so it can show which seat is the
+    	// dealer
 
     }
 
@@ -132,7 +130,7 @@ public class Player {
      *            array of players in the game
      */
     public void setPlayers(Player[] players) {
-	// TODO: send player information for each player to client.
+    	// TODO: send player information for each player to client.
     }
 
     /**
@@ -143,7 +141,7 @@ public class Player {
      *            the new player in the game.
      */
     public void newPlayerAdded(Player newplayer) {
-	// TODO: send player data to client
+    	// TODO: send player data to client
     }
 
     /**

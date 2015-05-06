@@ -19,6 +19,7 @@ public class PokerTable implements Runnable {
 			if (players[i] == null) {
 				players[i] = player;
 				player.tablenumber = tableId;
+				player.seatnumber = i;
 				return true;
 			}
 		}
@@ -94,6 +95,13 @@ public class PokerTable implements Runnable {
 			return true;
 		}
 		return false;
+	}
+
+	public void removePlayer(Player player) {
+		players[player.seatnumber] = null;
+		player.seatnumber = -1;
+		player.tablenumber = -1;
+		
 	}
 
 }
