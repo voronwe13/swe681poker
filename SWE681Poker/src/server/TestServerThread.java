@@ -92,7 +92,7 @@ public class TestServerThread implements Runnable {
 
 	private void startTableLoop() throws IOException {
 		try {
-			while(player.tablenumber >= 0){
+			while(player.tablenumber >= 0 && active){
 
 				String command = input.readLine();
 				System.out.println("got command: " + command);
@@ -103,6 +103,10 @@ public class TestServerThread implements Runnable {
 									break;
 					case "getchips": sendChips();
 									break;
+					case "getactivechips": sendActiveChips();
+									break;
+					case "getbids": sendBids();
+									break;
 					case "getdealer": sendDealer();
 									break;
 					case "getcommunitycards": sendCommunityCards();
@@ -111,6 +115,7 @@ public class TestServerThread implements Runnable {
 									break;
 					case "leavetable": currenttable.removePlayer(player);
 									break;
+					case "quit": active = false;
 				}
 				Thread.sleep(500);
 			}
@@ -124,6 +129,32 @@ public class TestServerThread implements Runnable {
 		
 	}
 
+
+	private void sendBids() {
+		Player[] players = currenttable.players;
+		for(int i=0; i < players.length; i++){
+			String bidstr = "";// = i+". ";
+			if(players[i] != null){
+				bidstr = "$" + players[i].currentbid;
+			}
+			System.out.println("sending: "+bidstr);
+			pw.println(bidstr);
+		}
+		pw.println("done");
+	}
+
+	private void sendActiveChips() {
+		Player[] players = currenttable.players;
+		for(int i=0; i < players.length; i++){
+			String chipstr = "";// = i+". ";
+			if(players[i] != null){
+				chipstr = "$" + players[i].activechips;
+			}
+			System.out.println("sending: "+chipstr);
+			pw.println(chipstr);
+		}
+		pw.println("done");
+	}
 
 	private void sendChips() {
 		String sendstr = ""+player.money;
@@ -147,8 +178,20 @@ public class TestServerThread implements Runnable {
 		pw.println("done");
 	}
 
-	private void joinGame() {
-		// TODO Auto-generated method stub
+	private void joinGame() throws IOException {
+		String chipstr = input.readLine();
+		if(Pattern.matches("^[0-9]{1,9}", chipstr)){
+			int chips = Integer.parseInt(chipstr);
+			if(chips > player.money){
+				System.out.println("possible attack, user requested more chips for the game than user has");
+				chips = player.money;
+			}
+			player.activechips = chips;
+			player.active = true;
+		} else {
+			System.out.println("possible attack, chips: " + chipstr);
+		}
+		
 		
 	}
 

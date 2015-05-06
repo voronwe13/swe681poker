@@ -358,6 +358,8 @@ public class LoginInterface {
 		showPlayers();
 		showPot();
 		showCommunityCards();
+		showActiveChips();
+		showBids();
 		
 		Rectangle rect = new Rectangle(CENTERX + 50, HEIGHT - 70, 70, 30);
 		Button backbtn = createButton(shell, SWT.NONE, rect, "Main Menu");
@@ -374,7 +376,7 @@ public class LoginInterface {
 
 	private void showPlayers() {
 		String[] playerlist = client.getPlayerList();
-		Rectangle playerrect = new Rectangle(10, 40, WIDTH/3, 20);
+		Rectangle playerrect = new Rectangle(10, 40, WIDTH/4, 20);
     	Label title = new Label(shell, SWT.LEFT);
     	title.setText("Players");
     	title.setBounds(playerrect);
@@ -406,7 +408,7 @@ public class LoginInterface {
 
 	private void showPot() {
 		String pot = client.getPot();
-		Rectangle potrect = new Rectangle(CENTERX, 120, CENTERX - 10, 20);
+		Rectangle potrect = new Rectangle(CENTERX+55, 120, CENTERX - 10, 20);
     	Label potlabel = new Label(shell, SWT.LEFT);
     	potlabel.setText("Pot: $"+pot);
     	potlabel.setBounds(potrect);
@@ -419,11 +421,41 @@ public class LoginInterface {
 			cardlist += card.suit.symbol + card.value.symbol + " ";
 		}
 		
-		Rectangle cardrect = new Rectangle(CENTERX, 80, CENTERX - 10, 20);
+		Rectangle cardrect = new Rectangle(CENTERX+55, 80, CENTERX - 10, 20);
     	Label title = new Label(shell, SWT.LEFT);
     	title.setText("Cards: " + cardlist);
     	title.setBounds(cardrect);		
 		
+	}
+	
+	private void showActiveChips(){
+		String[] activechips = client.getActiveChips();
+		Rectangle chipsrect = new Rectangle(WIDTH/4+15, 40, 50, 20);
+    	Label title = new Label(shell, SWT.LEFT);
+    	title.setText("Chips");
+    	title.setBounds(chipsrect);
+    	
+		for(int i=0; i<activechips.length; i++){
+			chipsrect.y += 22; 
+			Label chipslbl = new Label(shell, SWT.LEFT);
+			chipslbl.setText(activechips[i]);
+			chipslbl.setBounds(chipsrect);
+		}
+	}
+	
+	private void showBids(){
+		String[] bids = client.getBids();
+		Rectangle chipsrect = new Rectangle(WIDTH/4+65, 40, 50, 20);
+    	Label title = new Label(shell, SWT.LEFT);
+    	title.setText("Bids");
+    	title.setBounds(chipsrect);
+    	
+		for(int i=0; i<bids.length; i++){
+			chipsrect.y += 22; 
+			Label chipslbl = new Label(shell, SWT.LEFT);
+			chipslbl.setText(bids[i]);
+			chipslbl.setBounds(chipsrect);
+		}
 	}
 
 	private void showJoinGame() {
@@ -488,6 +520,12 @@ public class LoginInterface {
 		thread.start();
 	}
 
+	/**
+	 * This is for resetting the user's bid to 0 in the input box;
+	 * This is called from the gamethread, so it must use asyncExec
+	 * to update the display.
+	 * @param newbid
+	 */
 	public void setBid(int newbid) {
 		final int bid = newbid;
 		display.asyncExec(new Runnable(){
@@ -499,6 +537,11 @@ public class LoginInterface {
 		
 	}
 
+	/**
+	 * this is for setting the user's hand, and is called from the
+	 * gamethread, so it must use asyncExec to update the display.
+	 * @param cards
+	 */
 	public void setHand(Card[] cards) {
 		final String card1 = cards[0].symbol;
 		final String card2 = cards[1].symbol;
@@ -506,6 +549,15 @@ public class LoginInterface {
 			@Override
 			public void run(){
 				handlabel.setText("Hand: "+card1+" "+card2);
+			}
+		});
+	}
+	
+	public void update(){
+		display.asyncExec(new Runnable(){
+			@Override
+			public void run(){
+				showGame();
 			}
 		});
 	}

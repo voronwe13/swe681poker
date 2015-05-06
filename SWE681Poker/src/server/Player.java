@@ -32,6 +32,8 @@ import swe681poker.Card;
 public class Player {
     String username;
     int money; // money this player has according to the server
+    int activechips; //money player has in this game.  This is visible to other players.
+    int currentbid; //current bid in active game
     Card[] hand; // cards in hand
     boolean active; // whether player is in current game
     int tablenumber; // which table the player is currently playing at
@@ -53,6 +55,8 @@ public class Player {
 		wins = 0;
 		losses = 0;
 		folds = 0;
+		activechips = 0;
+		currentbid = 0;
     }
 
     /**
