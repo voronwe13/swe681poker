@@ -154,8 +154,8 @@ public class TestServer {
 		startServer();
 	}
 
-	public static void addPlayer(Player player) {
-		players.add(player);
+	public static void addPlayer(Player newplayer) {
+		players.add(newplayer);
 		if(players.size()/6 > tables.size()){
 			createTable();
 		}
@@ -175,5 +175,15 @@ public class TestServer {
 
 	public static void removePlayer(Player player) {
 		players.remove(player);
+	}
+
+	public static Player checkPlayer(String username) {
+		for(Player player:players){
+			if(player.username.equals(username)){
+				return player;
+				
+			}
+		}
+		return null;
 	}
 }

@@ -17,7 +17,6 @@ public class TestServerThread implements Runnable {
 	private Socket connection;
 	private String filepath;
 	BufferedReader input;
-	OutputStream output;
 	PrintWriter pw;
 	boolean active;
 	Player player;
@@ -49,11 +48,15 @@ public class TestServerThread implements Runnable {
 
 				String command = input.readLine();
 				switch(command){
+					case "checkintable": checkInTable();
+									break;
 					case "getgamelist": getOldGames();
 									break;
 					case "gettablelist": getTableList();
 									break;
-					case "jointable": joinTable();
+					case "jointable": joinTable(false);
+									break;
+					case "rejointable": joinTable(true);
 									break;
 					case "quit": active = false;
 				}
@@ -66,19 +69,27 @@ public class TestServerThread implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 		}
-		
+		closeConnections();
 	}
 
-	private void joinTable() throws IOException {
+	private void checkInTable() {
+		pw.println(player.tablenumber);
+	}
+
+	private void joinTable(boolean rejoin) throws IOException {
 		System.out.println("Join table requested");
-		String tablenumstr = input.readLine();
 		int tablenum = -1;
-		if(Pattern.matches("[0-9]{1,2}", tablenumstr))
-			tablenum = Integer.parseInt(tablenumstr);
-		if(tablenum < 0 || tablenum > TestServer.getNumTables()){
-			System.out.println("possible attack, requested tablenum: "+tablenumstr);
-			pw.println("failure");
-			return;
+		if(rejoin){
+			tablenum = player.tablenumber;
+		} else {
+			String tablenumstr = input.readLine();
+			if(Pattern.matches("[0-9]{1,2}", tablenumstr))
+				tablenum = Integer.parseInt(tablenumstr);
+			if(tablenum < 0 || tablenum > TestServer.getNumTables()){
+				System.out.println("possible attack, requested tablenum: "+tablenumstr);
+				pw.println("failure");
+				return;
+			}
 		}
 		PokerTable table = TestServer.getTable(tablenum);
 		if(!table.addPlayer(player)){
@@ -314,7 +325,7 @@ public class TestServerThread implements Runnable {
 				
 			System.out.println("Authentication succeeded.");
 			pw.println("success");
-			TestServer.addPlayer(player);
+			player.server = this;
 			return true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -323,4 +334,22 @@ public class TestServerThread implements Runnable {
 		return false;
 	}
 
+	public void closeConnections(){
+		active = false;
+		try {
+			pw.close();
+			input.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			connection.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }

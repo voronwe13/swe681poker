@@ -267,4 +267,17 @@ public class PokerClient {
 		}
 		return false;
 	}
+
+	public int checkTable() {
+		try {
+			printwriter.println("checkintable");
+			String position = bufferedreader.readLine();
+			return Integer.parseInt(position);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
 }

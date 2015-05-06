@@ -43,6 +43,7 @@ public class Player {
     BufferedReader bufferedreader; // bound to socket input
     int wins, losses, folds;
     String passwordForUserInformation = "dummyPassword";
+    TestServerThread server;
 
     // client socket to communicate with this player.
     // other stats for the player
@@ -58,6 +59,7 @@ public class Player {
 		folds = 0;
 		activechips = 0;
 		currentbid = 0;
+		server = null;
     }
 
     /**
@@ -234,8 +236,15 @@ public class Player {
 	    			stream.close();
 	    		}
 	    		if (valid == true) {
-	    			Player player = new Player(0, username);
-	    			player.readUserInformation();
+	    			Player player = TestServer.checkPlayer(username);
+	    			if(player == null){
+	    				player = new Player(0, username);
+	    				player.readUserInformation();
+	    				TestServer.addPlayer(player);
+	    			} else {
+	    				System.out.println("user was already logged in, disconnecting old port");
+	    				player.server.closeConnections();
+	    			}
 	    			return player;
 	    		} else {
 	    			return null;

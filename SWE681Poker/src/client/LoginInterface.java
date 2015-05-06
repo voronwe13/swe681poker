@@ -27,6 +27,7 @@ public class LoginInterface {
     PokerClient client;
     private GameThread gamethread;
     String tablename;
+    private int mytablenum;
 	private Text bidtext;
 	private Label handlabel;
 
@@ -35,13 +36,6 @@ public class LoginInterface {
     	//client = new PokerClientDummy();
     }
 
-    /*
-     * public static IvParameterSpec ivspecClient() { return ivspec; }
-     * 
-     * public static SecretKey sessionKeyClient() { return sessionKey; }
-     * 
-     * public static String nonceStringClient() { return nonceString; }
-     */
     /**
      * Launch the application.
      * 
@@ -236,10 +230,21 @@ public class LoginInterface {
     	Label title = new Label(shell, SWT.CENTER);
     	title.setText("Welcome to SecurePoker");
     	title.setBounds(10, 10, WIDTH - 20, 40);
-    	
     	int buttonwidth = 200, buttonheight = 30;
     	int halfbtnw = buttonwidth/2;
     	Rectangle buttonrect = new Rectangle(CENTERX - halfbtnw, 60, buttonwidth, buttonheight);
+    	
+    	mytablenum = client.checkTable();
+    	if(mytablenum >= 0){
+        	Button rejointable = createButton(shell, SWT.NONE, buttonrect, "Rejoin Table");
+        	rejointable.addSelectionListener(new SelectionAdapter() {
+        		@Override
+        		public void widgetSelected(SelectionEvent e) {
+        			rejoinTable();
+        		}
+        	});
+        	buttonrect.y += buttonheight + 5;
+    	}
     	Button jointable = createButton(shell, SWT.NONE, buttonrect, "Join a Table");
     	jointable.addSelectionListener(new SelectionAdapter() {
     		@Override
@@ -264,6 +269,11 @@ public class LoginInterface {
     		}
     	});    	
     }
+
+	protected void rejoinTable() {
+		if(client.selectTable(mytablenum))
+			joinTable();
+	}
 
 	protected void showOldGames() {
 		String[] gameliststr = client.getGameList();
@@ -330,8 +340,10 @@ public class LoginInterface {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
     			int selected = tablelist.getSelectionIndex(); 
-    			if(client.selectTable(selected))
-    				joinTable(tablelist.getSelection()[0]);
+    			if(client.selectTable(selected)){
+    				mytablenum = selected;
+    				joinTable();
+    			}
     		}
     	});
 		rect.x += rect.width + 10;
@@ -344,8 +356,8 @@ public class LoginInterface {
     	});
 	}
 
-	private void joinTable(String tablename) {
-		this.tablename = tablename;
+	private void joinTable() {
+		this.tablename = "Table "+mytablenum;
 		showTable();
 	}
 	
@@ -619,7 +631,7 @@ public class LoginInterface {
 		display.syncExec(new Runnable(){
 			@Override
 			public void run(){
-				//System.out.println("update ran from asyncExec");
+				System.out.println("update ran from asyncExec");
 				showTable();
 			}
 		});
