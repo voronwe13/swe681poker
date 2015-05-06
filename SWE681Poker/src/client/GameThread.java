@@ -15,6 +15,8 @@ public class GameThread implements Runnable {
 	PokerClient client;
 	private int bid;
 	public int minbid;
+	Object monitor;
+	boolean ready;
 	Queue<String> commandqueue;
 	
 	public GameThread(LoginInterface clientinterface){
@@ -23,6 +25,7 @@ public class GameThread implements Runnable {
 		client = clientint.client;
 		bid = 0;
 		commandqueue = new LinkedList<String>();
+		monitor = new Object();
 	}
 	
 	@Override
@@ -30,7 +33,7 @@ public class GameThread implements Runnable {
 		
 		
 		while(active){
-			if(!commandqueue.isEmpty()){
+			while(!commandqueue.isEmpty()){
 				String command = commandqueue.remove();
 				switch(command){
 				case "setbid": client.sendBid(bid);
@@ -39,8 +42,21 @@ public class GameThread implements Runnable {
 				}
 			}
 			if(client.checkUpdate()){
-				//System.out.println("about to tell interface to update...");
+				System.out.println("about to tell interface to update...");
+				ready = false;
 				clientint.update();
+				while(!ready){
+					synchronized(monitor){
+						try {
+							monitor.wait();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+
+				System.out.println("(in gamethread: finished update");
 			}
 			try {
 				Thread.sleep(800);
@@ -58,6 +74,14 @@ public class GameThread implements Runnable {
 	public void setBid(int bid){
 		this.bid = bid;
 		commandqueue.add("setbid");
+	}
+	
+	public void updateFinished(){
+		System.out.println("notifying thread that update is finished");
+		synchronized(monitor){
+			ready = true;
+			monitor.notifyAll();
+		}
 	}
 
 }

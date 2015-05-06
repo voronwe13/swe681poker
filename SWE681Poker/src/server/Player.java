@@ -104,6 +104,7 @@ public class Player {
      */
     public void setHand(Card[] hand) {
     	this.hand = hand;
+    	update = true;
     }
     
     public String[] getHand(){
@@ -111,7 +112,7 @@ public class Player {
     		return new String[0];
     	String[] cards = new String[hand.length];
     	for(int i=0; i<cards.length; i++){
-    		cards[i] = hand[i].symbol;
+    		cards[i] = "" + hand[i].intvalue;
     	}
     	return cards;
     }

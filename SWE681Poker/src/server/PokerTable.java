@@ -15,6 +15,8 @@ public class PokerTable implements Runnable {
 	}
 
 	public boolean addPlayer(Player player) {
+		if(player.tablenumber == tableId && players[player.seatnumber] == player) //check if player already seated at table
+				return true;
 		for (int i = 0; i < players.length; i++) {
 			if (players[i] == null) {
 				players[i] = player;
@@ -43,7 +45,8 @@ public class PokerTable implements Runnable {
 			// TODO: run games, keep track of players in table.
 			waitForPlayers(60);
 			dealer = findNextDealer();
-			game = new PokerGame(players, dealer);
+			game = new PokerGame(players, dealer, this);
+			game.startGame();
 		}
 
 	}

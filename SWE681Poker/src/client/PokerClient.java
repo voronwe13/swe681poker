@@ -192,15 +192,10 @@ public class PokerClient {
 	}
 
 	public Card[] getHand() {
-		Card[] hand = new Card[2];
-		try {
-			String card = bufferedreader.readLine();
-			hand[0] = new Card(Integer.parseInt(card));
-			card = bufferedreader.readLine();
-			hand[1] = new Card(Integer.parseInt(card));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String[] cardstr = getListFromServer("gethand");
+		Card[] hand = new Card[cardstr.length];
+		for(int i=0; i<hand.length; i++){
+			hand[i] = new Card(Integer.parseInt(cardstr[i]));
 		}
 		return hand;
 	}

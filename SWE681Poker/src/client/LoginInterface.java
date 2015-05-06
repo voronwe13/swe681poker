@@ -390,12 +390,22 @@ public class LoginInterface {
     			client.leaveTable();
     			showMainMenu();
     		}
-    	});		
+    	});
+		if(gamethread != null)
+			gamethread.updateFinished();
 	}
 
 	private void showHand() {
-		// TODO Auto-generated method stub
+		Card[] cards = client.getHand();
+		String cardlist = "";
+		for(Card card:cards){
+			cardlist += card.suit.symbol + card.value.symbol + " ";
+		}
 		
+		Rectangle cardrect = new Rectangle(CENTERX+25, 160, CENTERX - 10, 20);
+    	Label title = new Label(shell, SWT.LEFT);
+    	title.setText("My Cards: " + cardlist);
+    	title.setBounds(cardrect);	
 	}
 
 	private void showPlayers() {
@@ -432,7 +442,7 @@ public class LoginInterface {
 
 	private void showPot() {
 		String pot = client.getPot();
-		Rectangle potrect = new Rectangle(CENTERX+55, 120, CENTERX - 10, 20);
+		Rectangle potrect = new Rectangle(CENTERX+25, 120, CENTERX - 10, 20);
     	Label potlabel = new Label(shell, SWT.LEFT);
     	potlabel.setText("Pot: $"+pot);
     	potlabel.setBounds(potrect);
@@ -445,7 +455,7 @@ public class LoginInterface {
 			cardlist += card.suit.symbol + card.value.symbol + " ";
 		}
 		
-		Rectangle cardrect = new Rectangle(CENTERX+55, 80, CENTERX - 10, 20);
+		Rectangle cardrect = new Rectangle(CENTERX+25, 80, CENTERX - 10, 20);
     	Label title = new Label(shell, SWT.LEFT);
     	title.setText("Cards: " + cardlist);
     	title.setBounds(cardrect);		
@@ -631,7 +641,7 @@ public class LoginInterface {
 		display.syncExec(new Runnable(){
 			@Override
 			public void run(){
-				System.out.println("update ran from asyncExec");
+				System.out.println("update ran from syncExec");
 				showTable();
 			}
 		});

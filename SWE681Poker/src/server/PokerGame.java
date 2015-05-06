@@ -14,18 +14,21 @@ public class PokerGame {
 	int minbid;
 	List<Integer> bidhistory;
 	Card[] communitycards;
+	private PokerTable table;
 	public static final int firstroundmin = 10;
 	public static final int secondroundmin = 20;
 
-	public PokerGame(Player[] players, int dealer) {
+	public PokerGame(Player[] players, int dealer, PokerTable pokertable) {
 		this.players = players;
 		this.dealer = dealer;
 		deck = new CardDeck();
 		communitycards = new Card[5];
 		minbid = 10;
+		table = pokertable;
 	}
 	
 	public void startGame(){
+		System.out.println("Game started.  Whoo hoo!");
 		deck.shuffleDeck();
 		playersremaining = 0;
 		//deal out cards
@@ -55,7 +58,8 @@ public class PokerGame {
 //			if(player != null)
 //				player.sendCard(river);
 //		}
-		communitycards[5] = river;	
+		communitycards[4] = river;
+		table.updatePlayers();
 	}
 
 	private void playTurn() {
@@ -65,7 +69,8 @@ public class PokerGame {
 //			if(player != null)
 //				player.sendCard(turn);
 //		}
-		communitycards[4] = turn;
+		communitycards[3] = turn;
+		table.updatePlayers();
 	}
 
 	private void playFlop() {
@@ -78,6 +83,7 @@ public class PokerGame {
 		for(int i=0; i<flop.length; i++){
 			communitycards[i] = flop[i];
 		}
+		table.updatePlayers();
 	}
 
 	/**
