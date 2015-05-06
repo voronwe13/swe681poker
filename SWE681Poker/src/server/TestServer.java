@@ -37,6 +37,8 @@ public class TestServer {
 	private static List<Player> players;	
 	
 	private static void startServer() {
+		players = new ArrayList<Player>(MAX_PLAYERS);
+		
 		//Code adapted from http://blog.trifork.com/2009/11/10/securing-connections-with-tls/
 		try{
 			// Key store for your own private key and signing certificates
@@ -95,21 +97,22 @@ public class TestServer {
 		System.out.println("Server ready, now listening for connections...");
 		createTable();
 		while(serveractive){
-			try{
-				SSLSocket socket = (SSLSocket) mysocket.accept();
-				socket.setUseClientMode(false);
-				
-				socket.setEnabledProtocols(StrongTls.intersection(socket.getEnabledProtocols(), StrongTls.ENABLED_PROTOCOLS));
-				socket.setEnabledCipherSuites(StrongTls.intersection(socket.getEnabledCipherSuites(), StrongTls.ENABLED_CIPHER_SUITES));
-				
-				System.out.println("client connected from "
-						+socket.getInetAddress().toString()+":"+socket.getPort());
-				TestServerThread server = new TestServerThread(socket, FILEPATH+PORT+"\\");
-				Thread thread = new Thread(server);
-				thread.start();
-			} catch(IOException e){
-				
-			}
+			if(players.size() < MAX_PLAYERS) //stop accepting connections if server full
+				try{
+					SSLSocket socket = (SSLSocket) mysocket.accept();
+					socket.setUseClientMode(false);
+					
+					socket.setEnabledProtocols(StrongTls.intersection(socket.getEnabledProtocols(), StrongTls.ENABLED_PROTOCOLS));
+					socket.setEnabledCipherSuites(StrongTls.intersection(socket.getEnabledCipherSuites(), StrongTls.ENABLED_CIPHER_SUITES));
+					
+					System.out.println("client connected from "
+							+socket.getInetAddress().toString()+":"+socket.getPort());
+					TestServerThread server = new TestServerThread(socket, FILEPATH+PORT+"\\");
+					Thread thread = new Thread(server);
+					thread.start();
+				} catch(IOException e){
+					
+				}
 		}
 	}
 	
@@ -152,8 +155,6 @@ public class TestServer {
 	}
 
 	public static void addPlayer(Player player) {
-		if(players == null)
-			players = new ArrayList<Player>(MAX_PLAYERS);
 		players.add(player);
 		if(players.size()/6 > tables.size()){
 			createTable();
@@ -170,5 +171,9 @@ public class TestServer {
 		for(int i=1; i<=tablelist.length; i++)
 			tablelist[i-1] = "Table "+i+" - "+tables.get(i-1).currentlyRegisteredPlayers()+" players";
 		return tablelist;
+	}
+
+	public static void removePlayer(Player player) {
+		players.remove(player);
 	}
 }

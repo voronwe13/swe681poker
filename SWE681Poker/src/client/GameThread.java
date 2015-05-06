@@ -1,5 +1,10 @@
 package client;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import org.eclipse.swt.widgets.Display;
 
 import swe681poker.Card;
@@ -7,16 +12,17 @@ import swe681poker.Card;
 public class GameThread implements Runnable {
 	LoginInterface clientint;
 	boolean active;
-	Display display;
 	PokerClient client;
 	private int bid;
+	public int minbid;
+	Queue<String> commandqueue;
 	
 	public GameThread(LoginInterface clientinterface){
 		clientint = clientinterface;
 		active = true;
-		display = clientint.display;
 		client = clientint.client;
 		bid = 0;
+		commandqueue = new LinkedList<String>();
 	}
 	
 	@Override
@@ -24,15 +30,23 @@ public class GameThread implements Runnable {
 		
 		
 		while(active){
-			String command = client.getCommand();
-			switch(command){
-			case "update": clientint.showGame();
-						break;
-			case "getbid": client.sendBid(bid);
-						clientint.setBid(0);
-						bid = 0;
-			case "sethand": Card[] cards = client.getHand();
-							clientint.setHand(cards);
+			if(!commandqueue.isEmpty()){
+				String command = commandqueue.remove();
+				switch(command){
+				case "setbid": client.sendBid(bid);
+							clientint.setBid(0);
+							bid = 0;
+				}
+			}
+			if(client.checkUpdate()){
+				//System.out.println("about to tell interface to update...");
+				clientint.update();
+			}
+			try {
+				Thread.sleep(800);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
@@ -43,6 +57,7 @@ public class GameThread implements Runnable {
 	
 	public void setBid(int bid){
 		this.bid = bid;
+		commandqueue.add("setbid");
 	}
 
 }

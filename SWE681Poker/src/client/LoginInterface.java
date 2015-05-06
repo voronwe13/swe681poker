@@ -70,6 +70,8 @@ public class LoginInterface {
     		}
     	}
     	display.dispose();
+    	if(gamethread != null)
+    		gamethread.quit();
     	client.closeConnections();
     }
 
@@ -344,11 +346,10 @@ public class LoginInterface {
 
 	private void joinTable(String tablename) {
 		this.tablename = tablename;
-		showGame();
-		showJoinGame();
+		showTable();
 	}
 	
-	void showGame(){
+	void showTable(){
 		clearContents();
 		
     	Label title = new Label(shell, SWT.CENTER);
@@ -360,6 +361,12 @@ public class LoginInterface {
 		showCommunityCards();
 		showActiveChips();
 		showBids();
+		showHand();
+		if(gamethread != null){
+			showBidButtons();
+		}
+		else
+			showJoinGame();
 		
 		Rectangle rect = new Rectangle(CENTERX + 50, HEIGHT - 70, 70, 30);
 		Button backbtn = createButton(shell, SWT.NONE, rect, "Main Menu");
@@ -372,6 +379,11 @@ public class LoginInterface {
     			showMainMenu();
     		}
     	});		
+	}
+
+	private void showHand() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void showPlayers() {
@@ -490,14 +502,36 @@ public class LoginInterface {
 		joinbtn.setBounds(rect);
 	}
 
+	
+	
 	private void startGame() {
-		showGame();
+		showTable();
+		gamethread = new GameThread(this);
+		Thread thread = new Thread(gamethread);
+		thread.start();
+	}
+	
+	private void showBidButtons() {
+		int activechips = client.getMyActiveChips();
+		int minbid = client.getMinBid();
+		Rectangle rect = new Rectangle(CENTERX, HEIGHT - 170, 130, 25);
+		Label chipslbl = new Label(shell, SWT.NONE);
+    	chipslbl.setText("Available: $"+activechips);
+    	chipslbl.setBounds(rect);
+    	rect.x += rect.width + 5;
+    	rect.width = 70;
+		Label minbidlbl = new Label(shell, SWT.NONE);
+    	minbidlbl.setText("Min bid: $"+minbid);
+    	minbidlbl.setBounds(rect);
+    	rect.x -= 135;
+    	rect.y += rect.height + 5;
+    	rect.width = 40;
 		bidtext = new Text(shell, SWT.BORDER|SWT.RIGHT);
-		Rectangle rect = new Rectangle(10, HEIGHT - 110, 70, 25);
     	Label chipstext = new Label(shell, SWT.NONE);
     	chipstext.setText("Bid: $");
     	chipstext.setBounds(rect);
     	rect.x += rect.width + 5;
+    	rect.width = 70;
     	bidtext.setBounds(rect);
     	bidtext.setText("0");
     	rect.x += rect.width + 5;
@@ -515,9 +549,37 @@ public class LoginInterface {
     		}
     	});
 		bidbtn.setBounds(rect);
-		gamethread = new GameThread(this);
-		Thread thread = new Thread(gamethread);
-		thread.start();
+    	rect.x -= rect.width + 5;
+    	rect.y += rect.height + 5;
+		Button callbtn = createButton(shell, SWT.NONE, rect, "Call");
+		callbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			String chipstr = bidtext.getText();
+    			int bid = 0;
+    			if(Pattern.matches("^[0-9]*$", chipstr)){
+    				bid = Integer.parseInt(chipstr);
+    				if(gamethread != null && gamethread.active)
+    					gamethread.setBid(bid);
+    			} else return;
+    		}
+    	});
+		callbtn.setBounds(rect);
+    	rect.x += rect.width + 5;
+		Button foldbtn = createButton(shell, SWT.NONE, rect, "Fold");
+		foldbtn.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			String chipstr = bidtext.getText();
+    			int bid = 0;
+    			if(Pattern.matches("^[0-9]*$", chipstr)){
+    				bid = Integer.parseInt(chipstr);
+    				if(gamethread != null && gamethread.active)
+    					gamethread.setBid(bid);
+    			} else return;
+    		}
+    	});
+		foldbtn.setBounds(rect);
 	}
 
 	/**
@@ -554,10 +616,11 @@ public class LoginInterface {
 	}
 	
 	public void update(){
-		display.asyncExec(new Runnable(){
+		display.syncExec(new Runnable(){
 			@Override
 			public void run(){
-				showGame();
+				//System.out.println("update ran from asyncExec");
+				showTable();
 			}
 		});
 	}

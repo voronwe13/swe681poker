@@ -162,19 +162,32 @@ public class PokerClient {
 		}
 		return 0;
 	}
-
-	public String getCommand() {
+	
+	public int getMinBid() {
 		try {
-			String command = bufferedreader.readLine();
-			return command;
+			printwriter.println("getminbid");
+			String chipstr = bufferedreader.readLine();
+			return Integer.parseInt(chipstr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "error";
+		return 10;
 	}
 
+//	public String getCommand() {
+//		try {
+//			String command = bufferedreader.readLine();
+//			return command;
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return "error";
+//	}
+
 	public void sendBid(int bid) {
+		printwriter.println("sendbid");
 		printwriter.println(""+bid);
 	}
 
@@ -228,5 +241,30 @@ public class PokerClient {
 			e.printStackTrace();
 		}
 		return (String[]) list.toArray(new String[list.size()]);
+	}
+
+	public int getMyActiveChips() {
+		try {
+			printwriter.println("getmyactivechips");
+			String chipstr = bufferedreader.readLine();
+			return Integer.parseInt(chipstr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public boolean checkUpdate() {
+		try {
+			printwriter.println("checkupdate");
+			String updatestr = bufferedreader.readLine();
+			//System.out.println("checking for update: "+updatestr);
+			return Boolean.valueOf(updatestr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

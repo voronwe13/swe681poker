@@ -20,10 +20,18 @@ public class PokerTable implements Runnable {
 				players[i] = player;
 				player.tablenumber = tableId;
 				player.seatnumber = i;
+				updatePlayers();
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public void updatePlayers() {
+		for (Player player:players) {
+			if(player != null)
+				player.update();
+		}
 	}
 
 	@Override
@@ -98,10 +106,18 @@ public class PokerTable implements Runnable {
 	}
 
 	public void removePlayer(Player player) {
-		players[player.seatnumber] = null;
-		player.seatnumber = -1;
-		player.tablenumber = -1;
-		
+		if(player.tablenumber == tableId){
+			players[player.seatnumber] = null;
+			player.seatnumber = -1;
+			player.tablenumber = -1;
+			updatePlayers();
+		}
+	}
+
+	public int getMinBid() {
+		if(game != null)
+			return game.minbid;
+		else return 10;
 	}
 
 }

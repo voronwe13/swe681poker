@@ -11,6 +11,7 @@ public class PokerGame {
 	int dealer;
 	int playersremaining;
 	int pot;
+	int minbid;
 	List<Integer> bidhistory;
 	Card[] communitycards;
 	public static final int firstroundmin = 10;
@@ -21,6 +22,7 @@ public class PokerGame {
 		this.dealer = dealer;
 		deck = new CardDeck();
 		communitycards = new Card[5];
+		minbid = 10;
 	}
 	
 	public void startGame(){
@@ -30,7 +32,6 @@ public class PokerGame {
 		for(Player player:players){
 			if(player != null){
 				player.setHand(deck.dealX(2));
-				player.setDealer(dealer);
 				playersremaining++;
 			}
 		}
@@ -50,30 +51,30 @@ public class PokerGame {
 	private void playRiver() {
 		Card burn = deck.dealOne(); //probably not necessary, but following poker rules
 		Card river = deck.dealOne();
-		for(Player player:players){
-			if(player != null)
-				player.sendCard(river);
-		}
+//		for(Player player:players){
+//			if(player != null)
+//				player.sendCard(river);
+//		}
 		communitycards[5] = river;	
 	}
 
 	private void playTurn() {
 		Card burn = deck.dealOne(); //probably not necessary, but following poker rules
 		Card turn = deck.dealOne();
-		for(Player player:players){
-			if(player != null)
-				player.sendCard(turn);
-		}
+//		for(Player player:players){
+//			if(player != null)
+//				player.sendCard(turn);
+//		}
 		communitycards[4] = turn;
 	}
 
 	private void playFlop() {
 		Card burn = deck.dealOne(); //probably not necessary, but following poker rules
 		Card[] flop = deck.dealX(3);
-		for(Player player:players){
-			if(player != null)
-				player.sendFlop(flop);
-		}
+//		for(Player player:players){
+//			if(player != null)
+//				player.sendFlop(flop);
+//		}
 		for(int i=0; i<flop.length; i++){
 			communitycards[i] = flop[i];
 		}
@@ -102,7 +103,8 @@ public class PokerGame {
 	 */
 	private void notifyWin(int position) {
 		// TODO Auto-generated method stub
-		
+		players[position].activechips += pot;
+		players[position].money += pot;
 	}
 
 	private void checkWinFinal(){

@@ -36,6 +36,7 @@ public class Player {
     int currentbid; //current bid in active game
     Card[] hand; // cards in hand
     boolean active; // whether player is in current game
+    boolean update; // game has updated
     int tablenumber; // which table the player is currently playing at
     int seatnumber; // which seat at the table the player is at
     PrintWriter printwriter; // bound to socket output
@@ -101,66 +102,19 @@ public class Player {
      */
     public void setHand(Card[] hand) {
     	this.hand = hand;
-    	printwriter.println("sethand");
-    	printwriter.println(hand[0].intvalue);
-    	printwriter.println(hand[1].intvalue);
+    }
+    
+    public String[] getHand(){
+    	if(hand == null)
+    		return new String[0];
+    	String[] cards = new String[hand.length];
+    	for(int i=0; i<cards.length; i++){
+    		cards[i] = hand[i].symbol;
+    	}
+    	return cards;
     }
 
-    /**
-     * send the 3 card flop for hold'em to the client
-     * 
-     * @param flop
-     */
-    public void sendFlop(Card[] flop) {
-    	// TODO: send 3 card flop to the client (int values for cards)
-    }
-
-    /**
-     * send a single card to the client. This can be used for the turn and the
-     * river in hold'em, or any cards in a different game.
-     * 
-     * @param card
-     */
-    public void sendCard(Card card) {
-    	// TODO: send card to client
-    }
-
-    /**
-     * sends dealer number to client so it can show dealer, big blind and small
-     * blind
-     * 
-     * @param dealer
-     *            array position of dealer in players.
-     */
-    public void setDealer(int dealer) {
-    	// TODO send dealer number to client so it can show which seat is the
-    	// dealer
-
-    }
-
-    /**
-     * sends player information on the rest of the players. Specifically, the
-     * seat number (array position), the player's name, and the player's chip
-     * total.
-     * 
-     * @param players
-     *            array of players in the game
-     */
-    public void setPlayers(Player[] players) {
-    	// TODO: send player information for each player to client.
-    }
-
-    /**
-     * if new player joins the table, this notifies this player of the new
-     * player's attributes (see setPlayers).
-     * 
-     * @param newplayer
-     *            the new player in the game.
-     */
-    public void newPlayerAdded(Player newplayer) {
-    	// TODO: send player data to client
-    }
-
+ 
     /**
      * Creates a new user account, and returns a new player object.
      * 
@@ -395,4 +349,14 @@ public class Player {
 		}
     }
 
+    public void update(){
+    	update = true;
+    }
+    
+    public String getUpdate(){
+    	String updatestr = Boolean.toString(update);
+    	update = false;
+    	return updatestr;
+    }
+    
 }

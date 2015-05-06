@@ -95,7 +95,8 @@ public class TestServerThread implements Runnable {
 			while(player.tablenumber >= 0 && active){
 
 				String command = input.readLine();
-				System.out.println("got command: " + command);
+				if(!"checkupdate".equals(command))
+					System.out.println("got command: " + command);
 				switch(command){
 					case "getplayerlist": sendPlayerList();
 									break;
@@ -105,7 +106,13 @@ public class TestServerThread implements Runnable {
 									break;
 					case "getactivechips": sendActiveChips();
 									break;
+					case "getmyactivechips": sendMyActiveChips();
+									break;
+					case "gethand": sendHand();
+									break;
 					case "getbids": sendBids();
+									break;
+					case "getminbid": sendMinBid();
 									break;
 					case "getdealer": sendDealer();
 									break;
@@ -115,7 +122,9 @@ public class TestServerThread implements Runnable {
 									break;
 					case "leavetable": currenttable.removePlayer(player);
 									break;
-					case "quit": active = false;
+					case "checkupdate": checkUpdate();
+									break;
+					case "quit": quit();
 				}
 				Thread.sleep(500);
 			}
@@ -129,6 +138,41 @@ public class TestServerThread implements Runnable {
 		
 	}
 
+
+	private void sendHand() {
+		String[] hand = player.getHand();
+		for(int i=0; i < hand.length; i++){
+			String cardstr = hand[i];
+			System.out.println("sending: "+cardstr);
+			pw.println(cardstr);
+		}
+		pw.println("done");
+	}
+
+	private void checkUpdate() {
+		String sendstr = player.getUpdate();
+		//System.out.println("sending: "+sendstr);
+		pw.println(sendstr);
+	}
+
+	private void sendMyActiveChips() {
+		// TODO Auto-generated method stub
+		String sendstr = ""+player.activechips;
+		System.out.println("sending: "+sendstr);
+		pw.println(sendstr);
+	}
+
+	private void quit() {
+		active = false;
+		currenttable.removePlayer(player);
+		TestServer.removePlayer(player);
+	}
+
+	private void sendMinBid() {
+		String sendstr = ""+currenttable.getMinBid();
+		System.out.println("sending: "+sendstr);
+		pw.println(sendstr);
+	}
 
 	private void sendBids() {
 		Player[] players = currenttable.players;
@@ -191,7 +235,7 @@ public class TestServerThread implements Runnable {
 		} else {
 			System.out.println("possible attack, chips: " + chipstr);
 		}
-		
+		pw.println("success");
 		
 	}
 
