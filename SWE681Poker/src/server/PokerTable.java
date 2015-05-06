@@ -14,14 +14,15 @@ public class PokerTable implements Runnable {
 		tableId = id;
 	}
 
-	public void addPlayer(Player player) {
+	public boolean addPlayer(Player player) {
 		for (int i = 0; i < players.length; i++) {
 			if (players[i] == null) {
 				players[i] = player;
-				break;
+				player.tablenumber = tableId;
+				return true;
 			}
 		}
-		player.tablenumber = tableId;
+		return false;
 	}
 
 	@Override

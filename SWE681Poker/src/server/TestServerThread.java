@@ -19,6 +19,7 @@ public class TestServerThread implements Runnable {
 	PrintWriter pw;
 	boolean active;
 	Player player;
+	PokerTable currenttable;
 
 	TestServerThread(Socket connection, String filepath){
 		player = null;
@@ -41,8 +42,9 @@ public class TestServerThread implements Runnable {
 			if(!active)
 				pw.println("failure");
 		}
-		while(active){
-			try {
+		try {
+			while(active){
+
 				String command = input.readLine();
 				switch(command){
 					case "getgamelist": getOldGames();
@@ -53,14 +55,15 @@ public class TestServerThread implements Runnable {
 									break;
 				}
 				Thread.sleep(500);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 		}
+		
 	}
 
 	private void joinTable() throws IOException {
@@ -74,17 +77,70 @@ public class TestServerThread implements Runnable {
 			pw.println("failure");
 			return;
 		}
-			
 		PokerTable table = TestServer.getTable(tablenum);
-		table.addPlayer(player);
-		String command = input.readLine();
-		switch(command){
-			case "joingame": break;
-			case "leavetable": return;
-		}		
-		while(player.tablenumber >= 0){
-
+		if(!table.addPlayer(player)){
+			pw.println("tablefull");
+			return;
 		}
+		pw.println("success");
+		currenttable = table;
+		startTableLoop();
+	}
+
+	private void startTableLoop() throws IOException {
+		try {
+			while(player.tablenumber >= 0){
+
+				String command = input.readLine();
+				switch(command){
+					case "getplayerlist": sendPlayerList();
+									break;
+					case "getpot": sendPot();
+									break;
+					case "getdealer": sendDealer();
+									break;
+					case "joingame": joinGame();
+									break;
+				}
+				Thread.sleep(500);
+			}
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		
+	}
+
+	private void joinGame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void sendDealer() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void sendPot() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void sendPlayerList() {
+		Player[] players = currenttable.players;
+		for(int i=0; i < players.length; i++){
+			String seatstr = i+". ";
+			if(players[i] == null){
+				seatstr += "seat empty.";
+			} else {
+				seatstr += players[i].username;
+			}
+			pw.println(seatstr);
+		}
+		pw.println("done");
 	}
 
 	private void getTableList() throws IOException {

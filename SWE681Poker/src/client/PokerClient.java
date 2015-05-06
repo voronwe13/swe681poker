@@ -114,6 +114,7 @@ public class PokerClient {
 			printwriter.println("jointable");
 			printwriter.println(selected);
 			String response = bufferedreader.readLine();
+			System.out.println("select table response: "+response);
 			return "success".equals(response);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -136,7 +137,7 @@ public class PokerClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return (String[]) playerlist.toArray();
+		return (String[]) playerlist.toArray(new String[playerlist.size()]);
 	}
 
 	public int getDealer() {

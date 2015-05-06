@@ -168,7 +168,7 @@ public class TestServer {
 	public static String[] getTableList(){
 		String[] tablelist = new String[tables.size()];
 		for(int i=1; i<=tablelist.length; i++)
-			tablelist[i-1] = "Table "+i;
+			tablelist[i-1] = "Table "+i+" - "+tables.get(i-1).currentlyRegisteredPlayers()+" players";
 		return tablelist;
 	}
 }

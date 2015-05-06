@@ -26,16 +26,20 @@ public class Player {
     int seatnumber; // which seat at the table the player is at
     PrintWriter printwriter; // bound to socket output
     BufferedReader bufferedreader; // bound to socket input
+    int wins, losses, folds;
 
     // client socket to communicate with this player.
     // other stats for the player
 
     public Player(int startingmoney, String usernameInput) {
-	money = startingmoney;
-	active = false;
-	username = usernameInput;
-	tablenumber = -1;
-	seatnumber = -1;
+		money = startingmoney;
+		active = false;
+		username = usernameInput;
+		tablenumber = -1;
+		seatnumber = -1;
+		wins = 0;
+		losses = 0;
+		folds = 0;
     }
 
     /**
