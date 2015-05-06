@@ -52,7 +52,11 @@ public class TestServerThread implements Runnable {
 					case "jointable": joinTable();
 									break;
 				}
+				Thread.sleep(500);
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -60,7 +64,7 @@ public class TestServerThread implements Runnable {
 	}
 
 	private void joinTable() throws IOException {
-		// TODO 
+		System.out.println("Join table requested");
 		String tablenumstr = input.readLine();
 		int tablenum = -1;
 		if(Pattern.matches("[0-9]{1,2}", tablenumstr))
@@ -84,12 +88,17 @@ public class TestServerThread implements Runnable {
 	}
 
 	private void getTableList() throws IOException {
-		// TODO Auto-generated method stub
-		
+		System.out.println("gettablelist requested");
+		String[] tables = TestServer.getTableList();
+		for(String table:tables){
+			pw.println(table);
+		}
+		pw.println("done");
 	}
 
 	private void getOldGames() throws IOException {
 		// TODO Auto-generated method stub
+		System.out.println("getoldgames requested");
 		
 	}
 
@@ -113,6 +122,8 @@ public class TestServerThread implements Runnable {
 				player = Player.authenticatePlayer(username, password);
 			}
 			if(player == null){
+				if(newuser)
+					pw.println("usernametaken");
 				System.out.println("Authentication failed.");
 				return false;
 			} 

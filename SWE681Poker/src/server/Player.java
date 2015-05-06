@@ -152,61 +152,62 @@ public class Player {
      * @return new Player object, or null if username or password are not valid
      */
     public static Player createNewPlayer(String username, String password) {
-	// TODO check username/password, then create account
-	boolean valid = false;
-	try {
-	    // TODO check username/password, then create account
-	    // This is to check if the request is null
-	    // Later we will check for empty but not null strings
-	    if (username != null && password != null) {
-		// Check for the validity of the username
-		// No special characters allowed
-		if (Pattern.matches("^[A-Za-z]+$", username)
-			&& username.length() >= 4) {
-		    // Check if the username already exists
-		    File userFile = new File("AuthenticationFile/" + username);
-		    if (!userFile.exists()) {
-			// Check for the password
-			// No special characters are allowed
-			if (Pattern.matches("^[A-Za-z0-9]+$", password)
-				&& password.length() >= 8) {
-			    Random random = new SecureRandom();
-			    byte[] salt = new byte[16];
-			    random.nextBytes(salt);
-			    MessageDigest md = MessageDigest.getInstance("MD5");
+    	// TODO check username/password, then create account
+    	boolean valid = false;
+    	try {
+    		// TODO check username/password, then create account
+    		// This is to check if the request is null
+    		// Later we will check for empty but not null strings
+    		if (username != null && password != null) {
+    			// Check for the validity of the username
+    			// No special characters allowed
+    			if (Pattern.matches("^[A-Za-z]+$", username)
+    					&& username.length() >= 4) {
+    				// Check if the username already exists
+    				File userFile = new File("AuthenticationFile/" + username);
+    				if (!userFile.exists()) {
+    					// Check for the password
+    					// No special characters are allowed
+    					if (Pattern.matches("^[A-Za-z0-9]+$", password)
+    							&& password.length() >= 8) {
+    						Random random = new SecureRandom();
+    						byte[] salt = new byte[16];
+    						random.nextBytes(salt);
+    						MessageDigest md = MessageDigest.getInstance("MD5");
 
-			    byte combinedPasswordSalt[] = new byte[password
-				    .getBytes().length + salt.length];
-			    System.arraycopy(salt, 0, combinedPasswordSalt, 0,
-				    salt.length);
-			    System.arraycopy(password.getBytes(), 0,
-				    combinedPasswordSalt, salt.length,
-				    password.getBytes().length);
-			    byte[] digested = md.digest(combinedPasswordSalt);
+    						byte combinedPasswordSalt[] = new byte[password
+    						                                       .getBytes().length + salt.length];
+    						System.arraycopy(salt, 0, combinedPasswordSalt, 0,
+    								salt.length);
+    						System.arraycopy(password.getBytes(), 0,
+    								combinedPasswordSalt, salt.length,
+    								password.getBytes().length);
+    						byte[] digested = md.digest(combinedPasswordSalt);
 
-			    DataOutputStream stream = new DataOutputStream(
-				    new BufferedOutputStream(
-					    new FileOutputStream(
-						    "AuthenticationFile/"
-							    + username, true)));
-			    stream.write(salt);
-			    stream.write(digested);
-			    stream.close();
-			    valid = true;
-			}
-		    }
-		}
-	    }
-	    if (valid == true) {
-		return new Player(1000, username);
-	    } else {
-		return null;
-	    }
-	} catch (Exception e) {
-	    System.out.println(e.toString());
-	    valid = false;
-	    return null;
-	}
+    						DataOutputStream stream = new DataOutputStream(
+    								new BufferedOutputStream(
+    										new FileOutputStream(
+    												"AuthenticationFile/"
+    														+ username, true)));
+    						stream.write(salt);
+    						stream.write(digested);
+    						stream.close();
+    						valid = true;
+    					}
+    				}
+    				else return null;
+    			}
+    		}
+    		if (valid == true) {
+    			return new Player(1000, username);
+    		} else {
+    			return null;
+    		}
+    	} catch (Exception e) {
+    		System.out.println(e.toString());
+    		valid = false;
+    		return null;
+    	}
     }
 
     /**
@@ -220,51 +221,51 @@ public class Player {
      * @return new Player object, or null if username or password are not valid
      */
     public static Player authenticatePlayer(String username, String password) {
-	boolean valid = false;
-	try {
-	    File userFile = new File("AuthenticationFile/" + username);
-	    if (userFile.exists()) {
-		DataInputStream stream = new DataInputStream(
-			new BufferedInputStream(new FileInputStream(userFile)));
-		byte[] fileContent = new byte[32];
-		stream.readFully(fileContent);
-		byte[] salt = new byte[16];
-		byte[] digestedPassword = new byte[16];
-		for (int i = 0; i < 16; i++) {
-		    salt[i] = fileContent[i];
-		    digestedPassword[i] = fileContent[i + 16];
-		}
+    	boolean valid = false;
+    	try {
+    		File userFile = new File("AuthenticationFile/" + username);
+    		if (userFile.exists()) {
+    			DataInputStream stream = new DataInputStream(
+    					new BufferedInputStream(new FileInputStream(userFile)));
+    			byte[] fileContent = new byte[32];
+    			stream.readFully(fileContent);
+    			byte[] salt = new byte[16];
+    			byte[] digestedPassword = new byte[16];
+    			for (int i = 0; i < 16; i++) {
+    				salt[i] = fileContent[i];
+    				digestedPassword[i] = fileContent[i + 16];
+    			}
 
-		MessageDigest md = MessageDigest.getInstance("MD5");
+    			MessageDigest md = MessageDigest.getInstance("MD5");
 
-		byte combinedPasswordSalt[] = new byte[password.getBytes().length
-			+ salt.length];
-		System.arraycopy(salt, 0, combinedPasswordSalt, 0, salt.length);
-		System.arraycopy(password.getBytes(), 0, combinedPasswordSalt,
-			salt.length, password.getBytes().length);
-		byte[] digested = md.digest(combinedPasswordSalt);
+    			byte combinedPasswordSalt[] = new byte[password.getBytes().length
+    			                                       + salt.length];
+    			System.arraycopy(salt, 0, combinedPasswordSalt, 0, salt.length);
+    			System.arraycopy(password.getBytes(), 0, combinedPasswordSalt,
+    					salt.length, password.getBytes().length);
+    			byte[] digested = md.digest(combinedPasswordSalt);
 
-		int count = 0;
-		for (int i = 0; i < 16; i++) {
-		    if (digested[i] == digestedPassword[i]) {
-			count++;
-		    }
-		}
-		if (count == 16) {
-		    System.out.println("The user authenticated");
-		    valid = true;
-		}
-	    }
-	    if (valid == true) {
-		int chips = 1000; // TODO: get from stored player data
-		return new Player(chips, username);
-	    } else {
-		return null;
-	    }
-	} catch (Exception e) {
-	    System.out.println(e.toString());
-	    return null;
-	}
+    			int count = 0;
+    			for (int i = 0; i < 16; i++) {
+    				if (digested[i] == digestedPassword[i]) {
+    					count++;
+    				}
+    			}
+    			if (count == 16) {
+    				System.out.println("The user authenticated");
+    				valid = true;
+    			}
+    		}
+    		if (valid == true) {
+    			int chips = 1000; // TODO: get from stored player data
+    			return new Player(chips, username);
+    		} else {
+    			return null;
+    		}
+    	} catch (Exception e) {
+    		System.out.println(e.toString());
+    		return null;
+    	}
     }
 
 }

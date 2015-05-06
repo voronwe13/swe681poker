@@ -26,7 +26,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
 
 public class TestServer {
-	private static final int PORT = 9754;
+	private static final int PORT = 9753;
 	private static final String FILEPATH = "\\server";
 	public static final int MAX_TABLES = 9;
 	public static final int MAX_PLAYERS = 60;
@@ -163,5 +163,12 @@ public class TestServer {
 	public static PokerTable getTable(int tablenum) {
 		// TODO Auto-generated method stub
 		return tables.get(tablenum);
+	}
+	
+	public static String[] getTableList(){
+		String[] tablelist = new String[tables.size()];
+		for(int i=1; i<=tablelist.length; i++)
+			tablelist[i-1] = "Table "+i;
+		return tablelist;
 	}
 }

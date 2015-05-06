@@ -1,5 +1,7 @@
 package server;
 
+import java.util.List;
+
 import swe681poker.Card;
 import swe681poker.CardDeck;
 
@@ -9,6 +11,7 @@ public class PokerGame {
 	int dealer;
 	int playersremaining;
 	int pot;
+	List<Integer> bidhistory;
 	Card[] communitycards;
 	public static final int firstroundmin = 10;
 	public static final int secondroundmin = 20;
@@ -121,7 +124,7 @@ public class PokerGame {
 
 	/**
 	 * Conduct a round of bidding.  Get bids from each player, mark folded players as
-	 * inactive, until bidding is finished
+	 * inactive, until bidding is finished.  Record each bid in bidhistory.
 	 * @param minbet	the minimum bet for this round.
 	 */
 	private void biddingRound(int minbet) {
