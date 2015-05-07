@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import swe681poker.Card;
 
 
-public class LoginInterface {
+public class UserInterface {
 
 	final int WIDTH = 480, HEIGHT = 360;
 	final int CENTERX = WIDTH/2, CENTERY = HEIGHT/2;
@@ -30,7 +30,7 @@ public class LoginInterface {
     private int mytablenum;
 	private Text bidtext;
 
-    public LoginInterface() {
+    public UserInterface() {
     	client = new PokerClient();
     	//client = new PokerClientDummy();
     }
@@ -42,7 +42,7 @@ public class LoginInterface {
      */
     public static void main(String[] args) {
     	try {
-    		LoginInterface window = new LoginInterface();
+    		UserInterface window = new UserInterface();
     		window.open();
     	} catch (Exception e) {
     		e.printStackTrace();

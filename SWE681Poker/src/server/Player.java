@@ -111,8 +111,8 @@ public class Player {
     				if (!userFile.exists()) {
     					// Check for the password
     					// No special characters are allowed
-    					if (Pattern.matches("^[A-Za-z0-9]+$", password)
-    							&& password.length() >= 8) {
+//    					if (Pattern.matches("^[A-Za-z0-9]+$", password)
+//    							&& password.length() >= 8) {
     						Random random = new SecureRandom();
     						byte[] salt = new byte[16];
     						random.nextBytes(salt);
@@ -136,7 +136,7 @@ public class Player {
     						stream.write(digested);
     						stream.close();
     						valid = true;
-    					}
+//    					}
     				}
     				else return null;
     			}

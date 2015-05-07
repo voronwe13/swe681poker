@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import swe681poker.Card;
 
 public class GameThread implements Runnable {
-	LoginInterface clientint;
+	UserInterface clientint;
 	boolean active;
 	PokerClient client;
 	private int bid;
@@ -19,7 +19,7 @@ public class GameThread implements Runnable {
 	boolean ready;
 	Queue<String> commandqueue;
 	
-	public GameThread(LoginInterface clientinterface){
+	public GameThread(UserInterface clientinterface){
 		clientint = clientinterface;
 		active = true;
 		client = clientint.client;
