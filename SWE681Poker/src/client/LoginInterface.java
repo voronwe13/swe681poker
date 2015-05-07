@@ -29,7 +29,6 @@ public class LoginInterface {
     String tablename;
     private int mytablenum;
 	private Text bidtext;
-	private Label handlabel;
 
     public LoginInterface() {
     	client = new PokerClient();
@@ -621,21 +620,6 @@ public class LoginInterface {
 		
 	}
 
-	/**
-	 * this is for setting the user's hand, and is called from the
-	 * gamethread, so it must use asyncExec to update the display.
-	 * @param cards
-	 */
-	public void setHand(Card[] cards) {
-		final String card1 = cards[0].symbol;
-		final String card2 = cards[1].symbol;
-		display.asyncExec(new Runnable(){
-			@Override
-			public void run(){
-				handlabel.setText("Hand: "+card1+" "+card2);
-			}
-		});
-	}
 	
 	public void update(){
 		display.syncExec(new Runnable(){

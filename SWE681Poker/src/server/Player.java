@@ -43,7 +43,7 @@ public class Player {
     BufferedReader bufferedreader; // bound to socket input
     int wins, losses, folds;
     String passwordForUserInformation = "dummyPassword";
-    TestServerThread server;
+    ServerThread server;
 
     // client socket to communicate with this player.
     // other stats for the player
@@ -60,39 +60,6 @@ public class Player {
 		activechips = 0;
 		currentbid = 0;
 		server = null;
-    }
-
-    /**
-     * Get the bid from the client. Should use secure communication. Since this
-     * is server side, this should verify that bid amount is <= available money.
-     * 
-     * @param timeout
-     *            Amount of time in ms to wait for the client to respond
-     * @return Amount of bid. -1 for check/call, -2 for fold.
-     */
-    public int getBid(int timeout) {
-	try {
-		printwriter.println("getbid");
-		String bidstr = bufferedreader.readLine();
-		int bid = 0;
-		if (Pattern.matches("^[0-9]+$", bidstr)) // only allow positive
-			// numbers
-			bid = Integer.parseInt(bidstr);
-		else {
-			System.out.println("attack detected, invalid bid string: "+ bidstr);
-			return -2;
-		}
-		if (bid > money) {
-			System.out.println("attack detected: bid larger than available money");
-			return -2;
-		}
-
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-
-	return -2;
     }
 
     /**
@@ -237,11 +204,11 @@ public class Player {
 	    			stream.close();
 	    		}
 	    		if (valid == true) {
-	    			Player player = TestServer.checkPlayer(username);
+	    			Player player = Server.checkPlayer(username);
 	    			if(player == null){
 	    				player = new Player(0, username);
 	    				player.readUserInformation();
-	    				TestServer.addPlayer(player);
+	    				Server.addPlayer(player);
 	    			} else {
 	    				System.out.println("user was already logged in, disconnecting old port");
 	    				player.server.closeConnections();

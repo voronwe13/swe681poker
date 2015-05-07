@@ -15,6 +15,7 @@ public class PokerGame {
 	List<Integer> bidhistory;
 	Card[] communitycards;
 	private PokerTable table;
+	public int currentbidder;
 	public static final int firstroundmin = 10;
 	public static final int secondroundmin = 20;
 
@@ -25,6 +26,7 @@ public class PokerGame {
 		communitycards = new Card[5];
 		minbid = 10;
 		table = pokertable;
+		currentbidder = -1;
 	}
 	
 	public void startGame(){
